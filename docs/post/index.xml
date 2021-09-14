@@ -6,14 +6,26 @@
     <description>Recent content in Posts on 呂晟維 - luweber88.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>hugo-tutorial</title>
       <link>https://weberlu88.github.io/p/hugo-tutorial/</link>
-      <pubDate>Fri, 23 Jul 2021 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
       <description>待補</description>
+    </item>
+    
+    <item>
+      <title>VirtualBox 無法共用剪貼簿的萬年老 Bug</title>
+      <link>https://weberlu88.github.io/p/virtualbox-clipboard/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/p/virtualbox-clipboard/</guid>
+      <description>Kail linux 官網提供了很詳細的安裝教學文件，我們可以從virtualbox 的設定中看到我們開啟了 Shared Clipboard 功能。倘若你實際上卻無法與 host 主機共用剪貼簿，那就恭喜跟我一樣碰到 virtualbox 的老問題了。
+ 也有可能是 Kail linux ISO 的問題，因為我同台 host 也裝了 ubuntu、centOS 的 vm 卻沒有此狀況。
+ 開啟雙通道 有裝GuestAddition
+還沒解完&amp;hellip;明天再戰</description>
     </item>
     
     <item>
@@ -22,7 +34,7 @@
       <pubDate>Fri, 23 Jul 2021 00:00:00 +0000</pubDate>
       
       <guid>https://weberlu88.github.io/p/graduate-apply/</guid>
-      <description>這篇來的好像有點遲xd
+      <description>本來想說江湖版的文公開發布不太好，但是這篇文就當作部落格的第一篇文吧，若有不適再下架xd
 我覺得我們資管系和中央其他系不同的地方就是。資管的大家都在為自己的人生認真，生活步調像是閃爍霓虹的快，一切就是為了未來更好的條件與發展。但是，百忙之中，卻有人願意停下來關心你一下。
 從小到大的求學階段，我看過天賦異稟卻沒那麼努力的人；或者是努力付出了許多，卻不一定得到那麼多的人。不過呢，你在中央資管的大家庭，你就不是一個人單打獨鬥，學長姐、同儕間願意分享經歷、分享資源，是我最感謝、最珍惜的事情。祝福中央資管的各位未來順利、幸福、愉快。
 前言，正篇：

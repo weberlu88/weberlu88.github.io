@@ -6,22 +6,40 @@
     <description>Recent content in Categories on 呂晟維 - luweber88.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>推甄</title>
-      <link>https://weberlu88.github.io/categories/%E6%8E%A8%E7%94%84/</link>
-      <pubDate>Fri, 23 Jul 2021 00:00:00 +0000</pubDate>
+      <title>Linux</title>
+      <link>https://weberlu88.github.io/categories/linux/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://weberlu88.github.io/categories/%E6%8E%A8%E7%94%84/</guid>
+      <guid>https://weberlu88.github.io/categories/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>VM</title>
+      <link>https://weberlu88.github.io/categories/vm/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/categories/vm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>教學</title>
       <link>https://weberlu88.github.io/categories/%E6%95%99%E5%AD%B8/</link>
-      <pubDate>Fri, 23 Jul 2021 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://weberlu88.github.io/categories/%E6%95%99%E5%AD%B8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>推甄</title>
+      <link>https://weberlu88.github.io/categories/%E6%8E%A8%E7%94%84/</link>
+      <pubDate>Fri, 23 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/categories/%E6%8E%A8%E7%94%84/</guid>
       <description></description>
     </item>
     
