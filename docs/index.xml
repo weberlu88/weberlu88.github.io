@@ -64,7 +64,60 @@
 	&lt;figcaption&gt;有裝GuestAddition&lt;/figcaption&gt;
 	
 &lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;還沒解完&amp;hellip;明天再戰&lt;/p&gt;
+&lt;h2 id=&#34;正文開始&#34;&gt;正文開始&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可參考英文論壇的解法 &lt;a class=&#34;link&#34; href=&#34;https://askubuntu.com/questions/22743/how-do-i-install-guest-additions-in-a-virtualbox-vm&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://askubuntu.com/questions/22743/how-do-i-install-guest-additions-in-a-virtualbox-vm&lt;/a&gt; 或是中文翻譯版 &lt;a class=&#34;link&#34; href=&#34;https://ubuntuqa.com/zh-tw/article/66.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://ubuntuqa.com/zh-tw/article/66.html&lt;/a&gt; 或 &lt;a class=&#34;link&#34; href=&#34;https://www.jinnsblog.com/2021/05/virtualbox-guest-additions-install-guide.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.jinnsblog.com/2021/05/virtualbox-guest-additions-install-guide.html&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;因為我們已經在 virtualbox 的設定中加入了 GuestAddition.iso，因此可以在 vm 的桌面看到一個光碟機。點開來看裡面有 auturun 的執行檔，但是看起來就是沒有 work，需要手動安裝。如果你沒有在 virtualbox 設定中加入 GuestAddition.iso，須執行這項:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-terminal&#34; data-lang=&#34;terminal&#34;&gt;sudo apt-get update
+sudo apt-get install virtualbox-guest-additions-iso&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 116; 
+			flex-basis: 279px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-vbox.PNG&#34; data-size=&#34;800x686&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-vbox.PNG&#34;
+			width=&#34;800&#34;
+			height=&#34;686&#34;
+			srcset=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-vbox_hua17abb838d52c3b1478eac5330720e72_270684_480x0_resize_box_3.PNG 480w, https://weberlu88.github.io/p/virtualbox-clipboard/img-vbox_hua17abb838d52c3b1478eac5330720e72_270684_1024x0_resize_box_3.PNG 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;我們的目標是掛載光碟並執行 VBoxLinuxAdditions.run&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;我們的目標是掛載光碟並執行 VBoxLinuxAdditions.run&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;其他版本的 Linux 也許可以從檔案管理員執行 &lt;code&gt;VBoxLinuxAdditions.run&lt;/code&gt; 這個 shellscript。但 kali 不行，首先我們要掛載這個映像檔然後執行它:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-terminal&#34; data-lang=&#34;terminal&#34;&gt;sudo mount /dev/cdrom /mnt              # or any other mountpoint
+cd /mnt
+sudo sh ./VBoxLinuxAdditions.run
+reboot&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;雖然我在執行的時候噴 kernal header not found，但重開機後還是成功可共用剪貼簿了。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 190; 
+			flex-basis: 456px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-kernel-header-not-found.jpeg&#34; data-size=&#34;759x399&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-kernel-header-not-found.jpeg&#34;
+			width=&#34;759&#34;
+			height=&#34;399&#34;
+			srcset=&#34;https://weberlu88.github.io/p/virtualbox-clipboard/img-kernel-header-not-found_hu7c889c7627b37a1f452cf51371ffd366_252994_480x0_resize_q75_box.jpeg 480w, https://weberlu88.github.io/p/virtualbox-clipboard/img-kernel-header-not-found_hu7c889c7627b37a1f452cf51371ffd366_252994_1024x0_resize_q75_box.jpeg 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;ps: debian 的 header 是 linux-headers-amd64，即是更新了這個錯誤訊息也一樣&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;ps: debian 的 header 是 linux-headers-amd64，即是更新了這個錯誤訊息也一樣&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
 </description>
         </item>
         <item>
