@@ -7,15 +7,6 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>hugo-tutorial</title>
-        <link>https://weberlu88.github.io/p/hugo-tutorial/</link>
-        <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
-        
-        <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
-        <description>&lt;p&gt;待補&lt;/p&gt;
-</description>
-        </item>
-        <item>
         <title>VirtualBox 無法共用剪貼簿的萬年老 Bug</title>
         <link>https://weberlu88.github.io/p/virtualbox-clipboard/</link>
         <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
@@ -118,6 +109,80 @@ reboot&lt;/code&gt;&lt;/pre&gt;
 	&lt;figcaption&gt;ps: debian 的 header 是 linux-headers-amd64，即是更新了這個錯誤訊息也一樣&lt;/figcaption&gt;
 	
 &lt;/figure&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>Hugo tutorial</title>
+        <link>https://weberlu88.github.io/p/hugo-tutorial/</link>
+        <pubDate>Mon, 13 Sep 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
+        <description>&lt;img src="https://weberlu88.github.io/p/hugo-tutorial/img-hugo-logo.png" alt="Featured image of post Hugo tutorial" /&gt;&lt;blockquote&gt;
+&lt;p&gt;這篇文章將會教你如何用 hugo 的模板建立靜態網站，並且部屬到 github page 上作為你的個人網站。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;hugo-是什麼&#34;&gt;Hugo 是什麼&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;Hugo is a fast and modern static site generator written in Go, and designed to make website creation fun again.&amp;quot;&lt;/em&gt;  by &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/about/what-is-hugo/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;官網&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;優點&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;懶人 - Hugo 是一個靜態網頁生成器，使用者不需要對 html、css、js 進行任何操作，不怕套了精美的模板卻改不動。&lt;/li&gt;
+&lt;li&gt;簡潔 - 使用markdown格式撰寫文章，資源讀取簡單，而且開發時可以 life-reload 頁面。&lt;/li&gt;
+&lt;li&gt;漂亮 - 有各式各樣的模板供你選擇。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;實用連結&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.youtube.com/playlist?list=PLLAZ4kZ9dFpOnyRlyS-liKL5ReHDcj4G3&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Hugo - Static Site Generator | Tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.demo.off-record.net/21/1/install-hugo/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Hugo手把手安裝教學&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.jimmycai.com/p/hugo-theme-stack/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Hugo 主题 Stack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;hugo-開發環境安裝&#34;&gt;Hugo 開發環境安裝&lt;/h2&gt;
+&lt;p&gt;官網教學👉 &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/getting-started/installing/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://gohugo.io/getting-started/installing/&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;要使用 hugo 來開發不需要安裝 go 只需要安裝 hugo 即可，在 windows 環境下需要用 scoop、choco 在 cmd 中安裝；如果沒有這兩個套件管理工具或不想打指令，也可以從官方 &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio/hugo/releases&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;github release&lt;/a&gt; 下載 zip 檔，有些模板會用到 extended 版，最後記得將 hugo.exe 的 bin 目錄添加到環境變數中。詳細操作可以參考上方實用連結的YT頻道。&lt;/p&gt;
+&lt;h2 id=&#34;建立你的網站&#34;&gt;建立你的網站&lt;/h2&gt;
+&lt;p&gt;Hugo 使用 CLI(command line interface) 進行網站的本地部屬和打包等功能，常見的指令有&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;hugo new site&lt;/strong&gt; &amp;lt;&lt;strong&gt;directory-name&lt;/strong&gt;&amp;gt;: 在指定目錄建立新的專案。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;hugo server&lt;/strong&gt;: 在本機(localhost)部屬網站，可以 hot-update 讓你一邊編輯一邊查看成果。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;hugo&lt;/strong&gt;: 根據目錄中的 &lt;code&gt;config&lt;/code&gt; file 打包(build)專案，打包好的專案會寫入 &lt;code&gt;/docs&lt;/code&gt; 目錄，記得每次打包前要先刪除舊的 &lt;code&gt;/docs&lt;/code&gt; 唷，因為這個指令只會覆寫檔案，如果你刪除了一個頁面 hugo 不會幫你在 &lt;code&gt;/docs&lt;/code&gt; 中刪除他。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每個指令都可以帶相關參數，有關更多指令和參數可參考官網&lt;!-- raw HTML omitted --&gt;👉&lt;!-- raw HTML omitted --&gt; &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/commands/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://gohugo.io/commands/&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;建議使用 VScode、Autm、Sublime 等程式編輯器來開啟專案，這類 ide 都有內建終端機好讓你下 CLI 指令。&lt;/p&gt;
+&lt;h3 id=&#34;套用模板&#34;&gt;套用模板&lt;/h3&gt;
+&lt;p&gt;Hugo 的社群提供了各式各樣的模板&lt;!-- raw HTML omitted --&gt;👉&lt;!-- raw HTML omitted --&gt; &lt;a class=&#34;link&#34; href=&#34;https://themes.gohugo.io/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://themes.gohugo.io/&lt;/a&gt;。&lt;br&gt;
+Hugo 模板允許大量的客製化，網站的樣式、架構、config 配置取決於模板的設計。挑模板除了考慮美觀，也建議挑個有操作手冊的以便日後的更改和維護。&lt;/p&gt;
+&lt;p&gt;比如說這個網站的模板 &lt;a class=&#34;link&#34; href=&#34;https://github.com/CaiJimmy/hugo-theme-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;hugo-theme-stack&lt;/a&gt; 就有附上 github repo 和中英文文檔，我在更改左右側選單、自訂義css上方便許多。&lt;/p&gt;
+&lt;h3 id=&#34;編輯&#34;&gt;編輯&lt;/h3&gt;
+&lt;p&gt;在 hugo 專案上編輯網頁內容時再簡單不過了，hugo 使用 markdown 文件來記錄網站內容，文章內容放在 &lt;code&gt;/content&lt;/code&gt; 目錄中，假如說我今天要建立一個新的頁面，則可在 &lt;code&gt;/content/post&lt;/code&gt; 中新增一個資料夾，檔案格式為:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;/02-hugo-tutorial  (頁面資料夾)
+  |-- index.md     (文章內容)
+  |-- img-01.png   (index.md 引用的本地資源)
+  |-- img-02.png   (index.md 引用的本地資源)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;h2 id=&#34;github-page-創建及部屬&#34;&gt;Github Page 創建及部屬&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;官方文件 &lt;!-- raw HTML omitted --&gt;👉&lt;!-- raw HTML omitted --&gt; &lt;a class=&#34;link&#34; href=&#34;https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Github 為使用者提供了靜態網站的 hosting service，分成 project site, user site 和 organization site 幾種網頁，每個 repository 可以建一個 project site，每個帳號可以 host 一個 user site。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;user site 的 repo 名稱要取的跟你的username相同，也是你的網域名稱(domain): &lt;code&gt;&amp;lt;username&amp;gt;.github.io&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;user site 的網站連結: &lt;code&gt;http(s)://&amp;lt;username&amp;gt;.github.io&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;建立好對應的 github repo 後再至 &lt;em&gt;setting &amp;gt; pages&lt;/em&gt; 開啟網站。這個頁面可以選擇要從 repo 的哪個分支/哪個資料夾部屬網站。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;預設 main branch&lt;/strong&gt;: 就是以前的 master。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;root folder&lt;/strong&gt;: 部屬整個 repo。repo 須放 hugo 專案的 &lt;code&gt;public&lt;/code&gt; 資料夾。這種配置可將 source code 和 deployed site 獨立分開來，兩個各一個 repo。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;docs folder&lt;/strong&gt;: 部屬 repo 中的 &lt;code&gt;/docs&lt;/code&gt;。懶人方法是把整個 hugo 專案放在 repo 中，每次 build 好時把 &lt;code&gt;/public&lt;/code&gt; 改名就可以 commit 了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最後，我們要修改 hugo 專案的 config 檔，指定專案的網址為 &lt;code&gt;baseurl: https://&amp;lt;username&amp;gt;.github.io/&lt;/code&gt;，不然無法載入 js、css、img 等資源喔。&lt;/p&gt;
+
 </description>
         </item>
         <item>

@@ -11,7 +11,7 @@ lastmod: '2021-09-13'
 menu:
     main: 
         weight: -90
-        pre: user
+        pre: blog-lineal-color/032-group #user
 ---
 
 來寫點自介~

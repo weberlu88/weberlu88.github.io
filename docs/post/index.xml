@@ -8,15 +8,6 @@
     <language>en-us</language>
     <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>hugo-tutorial</title>
-      <link>https://weberlu88.github.io/p/hugo-tutorial/</link>
-      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
-      <description>待補</description>
-    </item>
-    
-    <item>
       <title>VirtualBox 無法共用剪貼簿的萬年老 Bug</title>
       <link>https://weberlu88.github.io/p/virtualbox-clipboard/</link>
       <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
@@ -29,6 +20,20 @@
  因為我們已經在 virtualbox 的設定中加入了 GuestAddition.iso，因此可以在 vm 的桌面看到一個光碟機。點開來看裡面有 auturun 的執行檔，但是看起來就是沒有 work，需要手動安裝。如果你沒有在 virtualbox 設定中加入 GuestAddition.iso，須執行這項:
 sudo apt-get updatesudo apt-get install virtualbox-guest-additions-iso 我們的目標是掛載光碟並執行 VBoxLinuxAdditions.run
 其他版本的 Linux 也許可以從檔案管理員執行 VBoxLinuxAdditions.run 這個 shellscript。但 kali 不行，首先我們要掛載這個映像檔然後執行它:</description>
+    </item>
+    
+    <item>
+      <title>Hugo tutorial</title>
+      <link>https://weberlu88.github.io/p/hugo-tutorial/</link>
+      <pubDate>Mon, 13 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
+      <description>這篇文章將會教你如何用 hugo 的模板建立靜態網站，並且部屬到 github page 上作為你的個人網站。
+ Hugo 是什麼 &amp;ldquo;Hugo is a fast and modern static site generator written in Go, and designed to make website creation fun again.&amp;quot; by 官網
+優點:
+ 懶人 - Hugo 是一個靜態網頁生成器，使用者不需要對 html、css、js 進行任何操作，不怕套了精美的模板卻改不動。 簡潔 - 使用markdown格式撰寫文章，資源讀取簡單，而且開發時可以 life-reload 頁面。 漂亮 - 有各式各樣的模板供你選擇。  實用連結:
+ Hugo - Static Site Generator | Tutorial Hugo手把手安裝教學 Hugo 主题 Stack  Hugo 開發環境安裝 官網教學👉 https://gohugo.io/getting-started/installing/。
+要使用 hugo 來開發不需要安裝 go 只需要安裝 hugo 即可，在 windows 環境下需要用 scoop、choco 在 cmd 中安裝；如果沒有這兩個套件管理工具或不想打指令，也可以從官方 github release 下載 zip 檔，有些模板會用到 extended 版，最後記得將 hugo.</description>
     </item>
     
     <item>
