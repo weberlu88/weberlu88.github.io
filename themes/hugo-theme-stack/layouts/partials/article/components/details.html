@@ -25,7 +25,7 @@
     <footer class="article-time">
         {{ if not .Date.IsZero }}
             <div>
-                {{ partial "helper/icon" "date" }}
+                {{ partial "helper/icon" "blog-lineal-color/046-calendar" }}
                 <time class="article-time--published">
                     {{- .Date.Format (or .Site.Params.dateFormat.published "Jan 02, 2006") -}}
                 </time>
@@ -34,7 +34,7 @@
 
         {{ if .Site.Params.article.readingTime }}
             <div>
-                {{ partial "helper/icon" "clock" }}
+                {{ partial "helper/icon" "blog-lineal-color/047-hourglass" }} <!-- clock-colorful -->
                 <time class="article-time--reading">
                     {{ T "article.readingTime" .ReadingTime }}
                 </time>

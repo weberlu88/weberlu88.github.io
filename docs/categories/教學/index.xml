@@ -6,7 +6,24 @@
     <description>Recent content in 教學 on 呂晟維 - luweber88.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/categories/%E6%95%99%E5%AD%B8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 17 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/categories/%E6%95%99%E5%AD%B8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo tutorial - 自訂義主題的 SVG Icon</title>
+      <link>https://weberlu88.github.io/p/hugo-tutorial-icon/</link>
+      <pubDate>Fri, 17 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/p/hugo-tutorial-icon/</guid>
+      <description>👦: 才接觸 hugo 三天就來東改西改484搞錯了什麼。
+👧: 要不要先去看個 YouTube 教學搞懂一下檔案結構和編譯方式呀?
+👦: 有道理&amp;hellip; 但是我拒絕.jpg !
+ 修改前後比對 預設的圖標是單色的 修改後變得繽紛許多
+Icon 的存放目錄 依照此模板官網的說法，預設的 SVG icon 放在 theme 目錄底下，即為 themes/hugo-theme-stack/assets/icons 目錄，為了方便起見我將我自己下載的 icon 資料夾放在同一個目錄中。其實你也可以放在 hugo 專案的 /assets/icons 底下。
+在設定檔中，圖檔名稱是可以包含路徑的，而網站在編譯時會自行加上副檔名:
+ 預設: iconname 自定義: subfolder/iconname  修改左側 Sidebar 上的圖示 首頁圖示 參照作者的文件: https://docs.stack.jimmycai.com/configuration/custom-menu.html。
+左側的 Sidebar 又稱菜單或 Menu，可以從(1) config.yaml 檔中設定，或是從(2) /content/page 底下 md 檔的標頭(Markdown Front Matter)設定。首頁圖示以及其他項目只能從 config 檔中設定，格式為:
+menu:main:- identifier:homename:首頁url:/weight:-100pre:blog-lineal/homeparams:### For demonstration purpose, the home link will be open in a new tabnewTab:false identifier: Item ID (指該 menu item 對應到哪個檔案?</description>
+    </item>
+    
     <item>
       <title>VirtualBox 無法共用剪貼簿的萬年老 Bug</title>
       <link>https://weberlu88.github.io/p/virtualbox-clipboard/</link>

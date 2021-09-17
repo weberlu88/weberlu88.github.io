@@ -6,7 +6,202 @@
         <description>Recent content on 呂晟維 - luweber88.github.io</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 17 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Hugo tutorial - 自訂義主題的 SVG Icon</title>
+        <link>https://weberlu88.github.io/p/hugo-tutorial-icon/</link>
+        <pubDate>Fri, 17 Sep 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://weberlu88.github.io/p/hugo-tutorial-icon/</guid>
+        <description>&lt;img src="https://weberlu88.github.io/p/hugo-tutorial-icon/img-hugo-logo.png" alt="Featured image of post Hugo tutorial - 自訂義主題的 SVG Icon" /&gt;&lt;blockquote&gt;
+&lt;p&gt;👦: 才接觸 hugo 三天就來東改西改484搞錯了什麼。&lt;br&gt;
+👧: 要不要先去看個 YouTube 教學搞懂一下檔案結構和編譯方式呀?&lt;br&gt;
+👦: 有道理&amp;hellip; &lt;a class=&#34;link&#34; href=&#34;https://zh.moegirl.org.cn/index.php?title=%E4%BD%86%E6%98%AF%E6%88%91%E6%8B%92%E7%BB%9D&amp;amp;variant=zh-tw&amp;amp;mobileaction=toggle_view_desktop&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;但是我拒絕.jpg&lt;/a&gt; !&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;修改前後比對&#34;&gt;修改前後比對&lt;/h2&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 182; 
+			flex-basis: 437px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-before.png&#34; data-size=&#34;1770x972&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-before.png&#34;
+			width=&#34;1770&#34;
+			height=&#34;972&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-before_hu920944f5cd9b5712282349630483d0bf_161092_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hugo-tutorial-icon/img-before_hu920944f5cd9b5712282349630483d0bf_161092_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;預設的圖標是單色的&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;預設的圖標是單色的&lt;/figcaption&gt;
+	
+&lt;/figure&gt;
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 178; 
+			flex-basis: 428px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-after.png&#34; data-size=&#34;1705x955&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-after.png&#34;
+			width=&#34;1705&#34;
+			height=&#34;955&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hugo-tutorial-icon/img-after_hu0445886c2dfb3a2d1973d8ef1083ab25_143530_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hugo-tutorial-icon/img-after_hu0445886c2dfb3a2d1973d8ef1083ab25_143530_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;修改後變得繽紛許多&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;修改後變得繽紛許多&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&#34;icon-的存放目錄&#34;&gt;Icon 的存放目錄&lt;/h2&gt;
+&lt;p&gt;依照此模板官網的說法，預設的 SVG icon 放在 theme 目錄底下，即為 &lt;code&gt;themes/hugo-theme-stack/assets/icons&lt;/code&gt; 目錄，為了方便起見我將我自己下載的 icon 資料夾放在同一個目錄中。其實你也可以放在 hugo 專案的 &lt;code&gt;/assets/icons&lt;/code&gt; 底下。&lt;/p&gt;
+&lt;p&gt;在設定檔中，圖檔名稱是可以包含路徑的，而網站在編譯時會自行加上副檔名:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;預設: &lt;em&gt;iconname&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;自定義: &lt;em&gt;subfolder/iconname&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;修改左側-sidebar-上的圖示&#34;&gt;修改左側 Sidebar 上的圖示&lt;/h2&gt;
+&lt;h3 id=&#34;首頁圖示&#34;&gt;首頁圖示&lt;/h3&gt;
+&lt;p&gt;參照作者的文件: &lt;a class=&#34;link&#34; href=&#34;https://docs.stack.jimmycai.com/configuration/custom-menu.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://docs.stack.jimmycai.com/configuration/custom-menu.html&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;左側的 Sidebar 又稱菜單或 Menu，可以從(1) &lt;code&gt;config.yaml&lt;/code&gt; 檔中設定，或是從(2) &lt;em&gt;/content/page&lt;/em&gt; 底下 md 檔的標頭(Markdown Front Matter)設定。首頁圖示以及其他項目只能從 config 檔中設定，格式為:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nt&#34;&gt;menu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;identifier&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;home&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;首頁&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;url&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;weight&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;-&lt;span class=&#34;m&#34;&gt;100&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;pre&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;blog-lineal/home&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;              &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;### For demonstration purpose, the home link will be open in a new tab&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;              &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;newTab&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;identifier&lt;/code&gt;: Item ID (指該 menu item 對應到哪個檔案??)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;name&lt;/code&gt;: Display text (左側選單上 menu item 的文字)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;url&lt;/code&gt;: Link (該頁面的路由)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;weight&lt;/code&gt;: Priority of the item, lower value means higher priority. (排序，數值越小越上面)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pre&lt;/code&gt;: Specify which SVG icon should be used (圖示)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;像是我將 &lt;code&gt;pre&lt;/code&gt; 改設為 &lt;code&gt;blog-lineal/home&lt;/code&gt;, theme 就會自動抓取 &lt;em&gt;assets/icons&lt;/em&gt; 目錄底下的 &lt;code&gt;blog-lineal/home.svg&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;其他-page-的圖示&#34;&gt;其他 Page 的圖示&lt;/h3&gt;
+&lt;p&gt;其他 menu item 裡的頁面，模板預設寫在 &lt;em&gt;/content/page&lt;/em&gt; 的 md 檔中，以我的&amp;quot;文章庫&amp;quot;為例，一樣將 &lt;code&gt;pre&lt;/code&gt; field 改成我的 svg 圖片檔名。當然你想要把 &lt;code&gt;menu:&lt;/code&gt; 這部分挪到 config 檔裡統一設定也 OK。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nn&#34;&gt;---&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;title&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;文章庫&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;ld&#34;&gt;2019-05-28&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;layout&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;archives&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;              &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# 哪種頁面樣板&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;slug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;archives&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# 路由&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;menu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;weight&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;-&lt;span class=&#34;m&#34;&gt;70&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;pre&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;blog-lineal/folder&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# icon&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nn&#34;&gt;---&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;修改頭像&#34;&gt;修改頭像&lt;/h3&gt;
+&lt;p&gt;順帶一提，大頭貼、副標題和網站名稱都可以在 config 中編輯。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nt&#34;&gt;sidebar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;emoji&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;🇹🇼&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;subtitle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;No&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;slave to the ordinary. Your legacy is yours to make.&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;avatar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;local&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;img/avatar_cap_and_gown.jpg&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;修改文章發表日期閱讀時間的圖示&#34;&gt;修改文章發表日期、閱讀時間的圖示&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;做下去才發現這個超難搞 &amp;gt;&amp;lt;&lt;br&gt;
+個人化修改可以參考: &lt;a class=&#34;link&#34; href=&#34;https://docs.stack.jimmycai.com/modify-theme/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://docs.stack.jimmycai.com/modify-theme/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;剛剛修改左側 Sidebar 時已經確認在整個 config.yaml 中 &lt;code&gt;pre&lt;/code&gt; field 只存在 Custom menu 的設定值裡，設定檔沒有其他地方使用 &lt;code&gt;pre&lt;/code&gt; field 來指定日期時間小圖示的檔名。在 &lt;code&gt;/page&lt;/code&gt; 的 FrontMatter 表頭裡也沒有這兩個圖示的賦值語法。恩&amp;hellip;這下尷尬了，不知道它藏在哪裡。&lt;/p&gt;
+&lt;p&gt;由於官方文件對於 &lt;a class=&#34;link&#34; href=&#34;https://docs.stack.jimmycai.com/configuration/#date-format&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Date format&lt;/a&gt; 沒有多做描述，我們在 theme-stack 專案的 &lt;a class=&#34;link&#34; href=&#34;https://github.com/CaiJimmy/hugo-theme-stack/pull/204&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;feat(article): reading time #204&lt;/a&gt; 這個 pull request 中看到文章發表日期的圖示是 date.svg，以及閱讀書間的圖示是 time.svg (由下文推敲出次圖示於後來的版本被改成 clock.svg)。&lt;/p&gt;
+&lt;p&gt;但還有一件事我們可以確定，就是這兩個 icon 的賦值一定存在專案的某個檔案片段，可能寫死在 theme 的 md 或是 html 裡面不讓使用者自訂義。所以還可以遍歷專案尋找哪裡有 date 或 time 字串。於是我打開 cmd 切到專案目錄下並輸入:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ grep -r &lt;span class=&#34;s2&#34;&gt;&amp;#34;date&amp;#34;&lt;/span&gt; .
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;grep&amp;#39;&lt;/span&gt; 不是內部或外部命令、可執行的程式或批次檔。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;蝦? 原來 windows 作業系統沒有 &lt;a class=&#34;link&#34; href=&#34;https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;grep 指令&lt;/a&gt;，還好有雷同的 &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/zh-tw/windows-server/administration/windows-commands/findstr&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;findstr 指令&lt;/a&gt;，記得將結果輸出到 out.txt 不然直接 print 在 cmd 上往往會因字體編碼出錯。來試試:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Batchfile&#34; data-lang=&#34;Batchfile&#34;&gt;$ findstr /si date *.* &lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; out.txt 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;打開 out.txt，看到 &amp;ldquo;helper/icon&amp;rdquo; &amp;ldquo;date&amp;rdquo; 這些關鍵字。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;268
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;269
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;270
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;271
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;272
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;273
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;themes\hugo-theme-stack\i18n\zh-CN.yaml:    lastUpdatedOn:
+themes\hugo-theme-stack\layouts\page\search.json:    {{- $data := dict &amp;#34;title&amp;#34; .Title &amp;#34;date&amp;#34; .Date &amp;#34;permalink&amp;#34; .Permalink &amp;#34;content&amp;#34; (.Plain) -}}
+themes\hugo-theme-stack\layouts\partials\article\components\details.html:    {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+themes\hugo-theme-stack\layouts\partials\article\components\details.html:        {{ if not .Date.IsZero }}
+&lt;span class=&#34;hl&#34;&gt;themes\hugo-theme-stack\layouts\partials\article\components\details.html:                {{ partial &amp;#34;helper/icon&amp;#34; &amp;#34;date&amp;#34; }}
+&lt;/span&gt;themes\hugo-theme-stack\layouts\partials\article\components\details.html:                    {{- .Date.Format (or .Site.Params.dateFormat.published &amp;#34;Jan 02, 2006&amp;#34;) -}}
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;接著把 &lt;code&gt;themes\hugo-theme-stack\layouts\partials\article\components\details.html&lt;/code&gt; 翻出來看看，哇! bingo! 就是這個檔案指定了日期時間的小圖示。看來他是寫死在這個 component 裡面所以就只能修改這個 html 了。&lt;/p&gt;
+&lt;p&gt;注意! 因為是修改 theme 的預設樣式，所以我們的 svg 圖檔資源要放在 &lt;code&gt;themes\hugo-theme-stack\assets\icon&lt;/code&gt; 裡，理當不能放在自己的 hugo 專案裡，如果你自己放了一包圖檔在資料夾中，圖檔名稱是可以包含路徑 e.g. &lt;code&gt;blog-linear/hourglass.svg&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;( Windows 的 dir 是 &lt;code&gt;\&lt;/code&gt; 反斜線，故意跟其他作業系統/程式語言不一樣。這裡 html 中的路徑須為 &lt;code&gt;/&lt;/code&gt; 斜線 )&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;{{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;article-time&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+    {{ if not .Date.IsZero }}
+        &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;            {{ partial &amp;#34;helper/icon&amp;#34; &amp;#34;date&amp;#34; }}
+&lt;/span&gt;            &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;time&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;article-time--published&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+                {{- .Date.Format (or .Site.Params.dateFormat.published &amp;#34;Jan 02, 2006&amp;#34;) -}}
+            &lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+    {{ end }}
+
+    {{ if .Site.Params.article.readingTime }}
+        &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;            {{ partial &amp;#34;helper/icon&amp;#34; &amp;#34;clock&amp;#34; }}
+&lt;/span&gt;            &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;time&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;article-time--reading&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+                {{ T &amp;#34;article.readingTime&amp;#34; .ReadingTime }}
+            &lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+    {{ end }}
+&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+{{ end }}
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;小結&#34;&gt;小結&lt;/h2&gt;
+&lt;p&gt;一路 trace code 改下來真的很花時間，如果是修改一般的網頁模板的圖示應該會比較輕鬆(不論是純JS或是三大框架)，只要對專案 CTRL+F 就可以找到哪裡引用了圖示資源再改掉他就好，哪像 hugo 這麼抽象化。&lt;/p&gt;
+&lt;p&gt;這個案例凸顯 Hugo 為了增加可擴充性，必須犧牲掉部分的可讀性，尤其是針對無法擴充的部分，所以在開發時設想哪些功能未來會被擴充很重要阿，後期增加的 features 要顧慮到這點也就更難了。正是 OOP open–closed principle 的寫照:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;Software entities should be open for extension, but closed for modification.&amp;rdquo; - Robert C. Martin&amp;rsquo;s 1996&lt;/em&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>VirtualBox 無法共用剪貼簿的萬年老 Bug</title>
         <link>https://weberlu88.github.io/p/virtualbox-clipboard/</link>
         <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>

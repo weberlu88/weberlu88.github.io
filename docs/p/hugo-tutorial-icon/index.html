@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='讓部落格從黑白變成彩色!'><title>Hugo tutorial - 自訂義主題的 SVG Icon</title>
+
+<link rel='canonical' href='https://weberlu88.github.io/p/hugo-tutorial-icon/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Hugo tutorial - 自訂義主題的 SVG Icon'>
+<meta property='og:description' content='讓部落格從黑白變成彩色!'>
+<meta property='og:url' content='https://weberlu88.github.io/p/hugo-tutorial-icon/'>
+<meta property='og:site_name' content='呂晟維 - luweber88.github.io'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-09-17T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-09-17T00:00:00&#43;00:00'/><meta property='og:image' content='https://weberlu88.github.io/p/hugo-tutorial-icon/img-hugo-logo.png' />
+<meta name="twitter:title" content="Hugo tutorial - 自訂義主題的 SVG Icon">
+<meta name="twitter:description" content="讓部落格從黑白變成彩色!"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://weberlu88.github.io/p/hugo-tutorial-icon/img-hugo-logo.png' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://weberlu88.github.io/" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/hugo-tutorial-icon/">
+                <img src="/p/hugo-tutorial-icon/img-hugo-logo_hucd358bea0277494dc1176617efda6bee_12848_800x0_resize_box_3.png"
+                        srcset="/p/hugo-tutorial-icon/img-hugo-logo_hucd358bea0277494dc1176617efda6bee_12848_800x0_resize_box_3.png 800w, /p/hugo-tutorial-icon/img-hugo-logo_hucd358bea0277494dc1176617efda6bee_12848_1600x0_resize_box_3.png 1600w"
+                        width="800" 
+                        height="263" 
+                        loading="lazy"
+                        alt="Featured image of post Hugo tutorial - 自訂義主題的 SVG Icon" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%95%99%E5%AD%B8/" >
+                教學
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/hugo-tutorial-icon/">Hugo tutorial - 自訂義主題的 SVG Icon</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        讓部落格從黑白變成彩色!
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M69.09,511.006C30.994,511.006,0,479.87,0,441.599V47.464c0-3.422,2.763-6.197,6.168-6.197h499.663
+	c3.407,0,6.168,2.774,6.168,6.197v394.134c0,38.271-30.993,69.407-69.09,69.407H69.09z"/>
+<path style="fill:#D4554B;" d="M505.832,41.267H6.168C2.763,41.267,0,44.041,0,47.464V161.49h512V47.464
+	C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M505.832,41.267h-43.655c3.407,0,6.169,2.774,6.169,6.197
+	V161.49H512V47.464C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M475.786,476.969H101.965c-38.096,0-69.09-31.136-69.09-69.407V41.267
+	H6.168C2.763,41.267,0,44.041,0,47.464v394.134c0,38.271,30.994,69.407,69.09,69.407H442.91c28.024,0,52.187-16.858,63.015-41.001
+	C496.811,474.462,486.585,476.969,475.786,476.969z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M84.105,261.375h53.501c2.188,0,3.962-1.772,3.962-3.96v-53.503c0-2.187-1.774-3.962-3.962-3.962
+		H84.105c-2.189,0-3.964,1.775-3.964,3.962v53.503C80.141,259.602,81.916,261.375,84.105,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,261.375h53.499c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		H181.2c-2.189,0-3.964,1.775-3.964,3.962v53.503C177.236,259.602,179.011,261.375,181.2,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,261.375h53.501c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		h-53.501c-2.187,0-3.962,1.775-3.962,3.962v53.503C273.339,259.602,275.113,261.375,277.301,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,261.375h53.503c2.185,0,3.96-1.772,3.96-3.96v-53.503c0-2.187-1.775-3.962-3.96-3.962
+		h-53.503c-2.188,0-3.962,1.775-3.962,3.962v53.503C370.434,259.602,372.208,261.375,374.396,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,360.451h53.501c2.188,0,3.962-1.773,3.962-3.963v-53.5c0-2.188-1.774-3.965-3.962-3.965
+		H84.105c-2.189,0-3.964,1.777-3.964,3.965v53.5C80.141,358.678,81.916,360.451,84.105,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,360.451h53.499c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		H181.2c-2.189,0-3.964,1.777-3.964,3.965v53.5C177.236,358.678,179.011,360.451,181.2,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,360.451h53.501c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		h-53.501c-2.187,0-3.962,1.777-3.962,3.965v53.5C273.339,358.678,275.113,360.451,277.301,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,360.451h53.503c2.185,0,3.96-1.773,3.96-3.963v-53.5c0-2.188-1.775-3.965-3.96-3.965
+		h-53.503c-2.188,0-3.962,1.777-3.962,3.965v53.5C370.434,358.678,372.208,360.451,374.396,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,459.524h53.501c2.188,0,3.962-1.773,3.962-3.962v-53.501c0-2.188-1.774-3.964-3.962-3.964
+		H84.105c-2.189,0-3.964,1.776-3.964,3.964v53.501C80.141,457.751,81.916,459.524,84.105,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,459.524h53.499c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		H181.2c-2.189,0-3.964,1.776-3.964,3.964v53.501C177.236,457.751,179.011,459.524,181.2,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,459.524h53.501c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		h-53.501c-2.187,0-3.962,1.776-3.962,3.964v53.501C273.339,457.751,275.113,459.524,277.301,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,459.524h53.503c2.185,0,3.96-1.773,3.96-3.962v-53.501c0-2.188-1.775-3.964-3.96-3.964
+		h-53.503c-2.188,0-3.962,1.776-3.962,3.964v53.501C370.434,457.751,372.208,459.524,374.396,459.524z"/>
+</g>
+<g>
+	<path style="fill:#41484E;" d="M64.177,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.863,0,17.858-8.033,17.858-17.943V18.936C82.036,9.027,74.039,0.994,64.177,0.994z"/>
+	<path style="fill:#41484E;" d="M140.907,0.994c-9.864,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		s17.859-8.033,17.859-17.943V18.936C158.765,9.027,150.77,0.994,140.907,0.994z"/>
+	<path style="fill:#41484E;" d="M217.634,0.994c-9.863,0-17.858,8.032-17.858,17.942v55.817c0,9.91,7.996,17.943,17.858,17.943
+		c9.864,0,17.86-8.033,17.86-17.943V18.936C235.495,9.027,227.499,0.994,217.634,0.994z"/>
+	<path style="fill:#41484E;" d="M294.366,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C312.224,9.027,304.229,0.994,294.366,0.994z"/>
+	<path style="fill:#41484E;" d="M371.093,0.994c-9.863,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C388.953,9.027,380.958,0.994,371.093,0.994z"/>
+	<path style="fill:#41484E;" d="M447.824,0.994c-9.865,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.995,17.943,17.86,17.943
+		c9.862,0,17.858-8.033,17.858-17.943V18.936C465.683,9.027,457.686,0.994,447.824,0.994z"/>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+
+                <time class="article-time--published">Sep 17, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M330.311,257.815c77.955-35.78,133.303-126.189,133.303-232.085H48.385
+	c0,105.897,55.948,196.305,133.904,232.085c-77.955,35.78-133.904,126.19-133.904,232.087h415.229
+	C463.614,384.005,408.266,293.595,330.311,257.815z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M59.023,489.902c-2.837,0-5.552-1.154-7.52-3.195
+	c-1.97-2.042-3.024-4.796-2.922-7.631c1.704-47.231,14.68-92.708,37.523-131.511c24.065-40.877,57.325-71.913,96.185-89.75
+	c-38.86-17.836-72.12-48.871-96.185-89.749C63.261,129.261,50.285,83.786,48.581,36.555c-0.102-2.835,0.953-5.589,2.922-7.631
+	c1.969-2.042,4.683-3.195,7.52-3.195h33.643c5.634,0,10.254,4.466,10.443,10.098c1.598,47.499,14.583,93.227,37.549,132.239
+	c20.258,34.413,47.545,62.331,78.908,80.738c3.196,1.876,5.16,5.305,5.16,9.011c0,3.706-1.963,7.136-5.16,9.011
+	c-31.364,18.407-58.649,46.326-78.908,80.739c-22.967,39.012-35.952,84.74-37.549,132.239c-0.189,5.632-4.809,10.098-10.443,10.098
+	H59.023z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M429.318,465.651c-4.028,0-7.514-3.008-8.014-7.108c-4.01-32.927-14.103-63.398-29.998-90.569
+		c-2.255-3.854-0.957-8.805,2.895-11.06c3.855-2.254,8.805-0.957,11.06,2.896c17.015,29.088,27.812,61.648,32.093,96.777
+		c0.54,4.432-2.616,8.464-7.048,9.002C429.975,465.631,429.645,465.651,429.318,465.651z"/>
+	<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M330.311,257.815
+		c77.955,35.78,133.303,126.19,133.303,232.086h-44.852C418.762,347.621,330.311,257.815,330.311,257.815"/>
+</g>
+<path style="fill:#48587C;" d="M154.912,475.615c4.629-26.33,14.847-50.346,29.874-69.625c19.48-24.993,44.772-38.753,71.215-38.753
+	c26.445,0,51.737,13.76,71.214,38.751c15.027,19.28,25.245,43.295,29.875,69.627H154.912z"/>
+<path style="fill:#FCB63E;" d="M488.345,489.58c0,12.384-10.402,22.42-23.233,22.42H46.888c-12.831,0-23.233-10.036-23.233-22.42
+	v-24.457c0-12.383,10.403-22.42,23.233-22.42h418.224c12.831,0,23.233,10.037,23.233,22.42V489.58z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,489.58v-24.457c0-12.383,10.402-22.42,23.233-22.42h-56.53
+	c-12.831,0-23.233,10.037-23.233,22.42v24.457c0,12.384,10.403,22.42,23.233,22.42h56.531C90.587,512,80.185,501.964,80.185,489.58z
+	"/>
+<g>
+	<path style="fill:#48587C;" d="M255.999,242.912c-7.658,0-14.07-5.734-14.914-13.339c-37.895-4.29-72.757-24.312-100.817-57.9
+		c-2.6-3.113-5.168-6.387-7.635-9.734c-2.338-3.173-2.692-7.393-0.914-10.911s5.384-5.736,9.326-5.736h229.908
+		c3.941,0,7.548,2.218,9.326,5.736c1.778,3.517,1.424,7.736-0.913,10.91c-2.46,3.336-5.027,6.611-7.633,9.731
+		c-28.063,33.591-62.925,53.614-100.819,57.903C270.071,237.174,263.66,242.912,255.999,242.912z"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="275.477" r="15.012"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="323.062" r="15.012"/>
+</g>
+<path style="fill:#FCB63E;" d="M488.345,46.876c0,12.384-10.402,22.418-23.233,22.418H46.888c-12.831,0-23.233-10.034-23.233-22.418
+	V22.418C23.654,10.037,34.057,0,46.888,0h418.224c12.831,0,23.233,10.037,23.233,22.418V46.876z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,46.876V22.418C80.185,10.037,90.587,0,103.418,0h-56.53
+	C34.057,0,23.655,10.037,23.655,22.418v24.458c0,12.384,10.403,22.418,23.233,22.418h56.531
+	C90.587,69.294,80.185,59.26,80.185,46.876z"/>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+ 
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <blockquote>
+<p>👦: 才接觸 hugo 三天就來東改西改484搞錯了什麼。<br>
+👧: 要不要先去看個 YouTube 教學搞懂一下檔案結構和編譯方式呀?<br>
+👦: 有道理&hellip; <a class="link" href="https://zh.moegirl.org.cn/index.php?title=%E4%BD%86%E6%98%AF%E6%88%91%E6%8B%92%E7%BB%9D&amp;variant=zh-tw&amp;mobileaction=toggle_view_desktop"  target="_blank" rel="noopener"
+    >但是我拒絕.jpg</a> !</p>
+</blockquote>
+<h2 id="修改前後比對">修改前後比對</h2>
+<p><figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 182; 
+			flex-basis: 437px"
+	>
+	<a href="/p/hugo-tutorial-icon/img-before.png" data-size="1770x972">
+		<img src="/p/hugo-tutorial-icon/img-before.png"
+			width="1770"
+			height="972"
+			srcset="/p/hugo-tutorial-icon/img-before_hu920944f5cd9b5712282349630483d0bf_161092_480x0_resize_box_3.png 480w, /p/hugo-tutorial-icon/img-before_hu920944f5cd9b5712282349630483d0bf_161092_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="預設的圖標是單色的">
+	</a>
+	
+	<figcaption>預設的圖標是單色的</figcaption>
+	
+</figure>
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 178; 
+			flex-basis: 428px"
+	>
+	<a href="/p/hugo-tutorial-icon/img-after.png" data-size="1705x955">
+		<img src="/p/hugo-tutorial-icon/img-after.png"
+			width="1705"
+			height="955"
+			srcset="/p/hugo-tutorial-icon/img-after_hu0445886c2dfb3a2d1973d8ef1083ab25_143530_480x0_resize_box_3.png 480w, /p/hugo-tutorial-icon/img-after_hu0445886c2dfb3a2d1973d8ef1083ab25_143530_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="修改後變得繽紛許多">
+	</a>
+	
+	<figcaption>修改後變得繽紛許多</figcaption>
+	
+</figure></p>
+<h2 id="icon-的存放目錄">Icon 的存放目錄</h2>
+<p>依照此模板官網的說法，預設的 SVG icon 放在 theme 目錄底下，即為 <code>themes/hugo-theme-stack/assets/icons</code> 目錄，為了方便起見我將我自己下載的 icon 資料夾放在同一個目錄中。其實你也可以放在 hugo 專案的 <code>/assets/icons</code> 底下。</p>
+<p>在設定檔中，圖檔名稱是可以包含路徑的，而網站在編譯時會自行加上副檔名:</p>
+<ul>
+<li>預設: <em>iconname</em></li>
+<li>自定義: <em>subfolder/iconname</em></li>
+</ul>
+<h2 id="修改左側-sidebar-上的圖示">修改左側 Sidebar 上的圖示</h2>
+<h3 id="首頁圖示">首頁圖示</h3>
+<p>參照作者的文件: <a class="link" href="https://docs.stack.jimmycai.com/configuration/custom-menu.html"  target="_blank" rel="noopener"
+    >https://docs.stack.jimmycai.com/configuration/custom-menu.html</a>。</p>
+<p>左側的 Sidebar 又稱菜單或 Menu，可以從(1) <code>config.yaml</code> 檔中設定，或是從(2) <em>/content/page</em> 底下 md 檔的標頭(Markdown Front Matter)設定。首頁圖示以及其他項目只能從 config 檔中設定，格式為:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">menu</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l">home</span><span class="w">
+</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">首頁</span><span class="w">
+</span><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">/</span><span class="w">
+</span><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">100</span><span class="w">
+</span><span class="w">          </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/home</span><span class="w">
+</span><span class="w">          </span><span class="nt">params</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="c">### For demonstration purpose, the home link will be open in a new tab</span><span class="w">
+</span><span class="w">              </span><span class="nt">newTab</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></code></pre></div><ul>
+<li><code>identifier</code>: Item ID (指該 menu item 對應到哪個檔案??)</li>
+<li><code>name</code>: Display text (左側選單上 menu item 的文字)</li>
+<li><code>url</code>: Link (該頁面的路由)</li>
+<li><code>weight</code>: Priority of the item, lower value means higher priority. (排序，數值越小越上面)</li>
+<li><code>pre</code>: Specify which SVG icon should be used (圖示)</li>
+</ul>
+<p>像是我將 <code>pre</code> 改設為 <code>blog-lineal/home</code>, theme 就會自動抓取 <em>assets/icons</em> 目錄底下的 <code>blog-lineal/home.svg</code>。</p>
+<h3 id="其他-page-的圖示">其他 Page 的圖示</h3>
+<p>其他 menu item 裡的頁面，模板預設寫在 <em>/content/page</em> 的 md 檔中，以我的&quot;文章庫&quot;為例，一樣將 <code>pre</code> field 改成我的 svg 圖片檔名。當然你想要把 <code>menu:</code> 這部分挪到 config 檔裡統一設定也 OK。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;文章庫&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="ld">2019-05-28</span><span class="w">
+</span><span class="w"></span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">              </span><span class="c"># 哪種頁面樣板</span><span class="w">
+</span><span class="w"></span><span class="nt">slug</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">                </span><span class="c"># 路由</span><span class="w">
+</span><span class="w"></span><span class="nt">menu</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">70</span><span class="w">
+</span><span class="w">        </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/folder</span><span class="w"> </span><span class="c"># icon</span><span class="w">
+</span><span class="w"></span><span class="nn">---</span><span class="w">
+</span></code></pre></div><h3 id="修改頭像">修改頭像</h3>
+<p>順帶一提，大頭貼、副標題和網站名稱都可以在 config 中編輯。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">sidebar</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">emoji</span><span class="p">:</span><span class="w"> </span><span class="l">🇹🇼</span><span class="w">
+</span><span class="w">    </span><span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="kc">No</span><span class="w"> </span><span class="l">slave to the ordinary. Your legacy is yours to make.</span><span class="w">
+</span><span class="w">    </span><span class="nt">avatar</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">        </span><span class="nt">local</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">        </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="l">img/avatar_cap_and_gown.jpg</span><span class="w">
+</span></code></pre></div><h2 id="修改文章發表日期閱讀時間的圖示">修改文章發表日期、閱讀時間的圖示</h2>
+<blockquote>
+<p>做下去才發現這個超難搞 &gt;&lt;<br>
+個人化修改可以參考: <a class="link" href="https://docs.stack.jimmycai.com/modify-theme/"  target="_blank" rel="noopener"
+    >https://docs.stack.jimmycai.com/modify-theme/</a></p>
+</blockquote>
+<p>剛剛修改左側 Sidebar 時已經確認在整個 config.yaml 中 <code>pre</code> field 只存在 Custom menu 的設定值裡，設定檔沒有其他地方使用 <code>pre</code> field 來指定日期時間小圖示的檔名。在 <code>/page</code> 的 FrontMatter 表頭裡也沒有這兩個圖示的賦值語法。恩&hellip;這下尷尬了，不知道它藏在哪裡。</p>
+<p>由於官方文件對於 <a class="link" href="https://docs.stack.jimmycai.com/configuration/#date-format"  target="_blank" rel="noopener"
+    >Date format</a> 沒有多做描述，我們在 theme-stack 專案的 <a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack/pull/204"  target="_blank" rel="noopener"
+    >feat(article): reading time #204</a> 這個 pull request 中看到文章發表日期的圖示是 date.svg，以及閱讀書間的圖示是 time.svg (由下文推敲出次圖示於後來的版本被改成 clock.svg)。</p>
+<p>但還有一件事我們可以確定，就是這兩個 icon 的賦值一定存在專案的某個檔案片段，可能寫死在 theme 的 md 或是 html 裡面不讓使用者自訂義。所以還可以遍歷專案尋找哪裡有 date 或 time 字串。於是我打開 cmd 切到專案目錄下並輸入:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">$ grep -r <span class="s2">&#34;date&#34;</span> .
+<span class="s1">&#39;grep&#39;</span> 不是內部或外部命令、可執行的程式或批次檔。
+</code></pre></div><p>蝦? 原來 windows 作業系統沒有 <a class="link" href="https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively"  target="_blank" rel="noopener"
+    >grep 指令</a>，還好有雷同的 <a class="link" href="https://docs.microsoft.com/zh-tw/windows-server/administration/windows-commands/findstr"  target="_blank" rel="noopener"
+    >findstr 指令</a>，記得將結果輸出到 out.txt 不然直接 print 在 cmd 上往往會因字體編碼出錯。來試試:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Batchfile" data-lang="Batchfile">$ findstr /si date *.* <span class="p">&gt;&gt;</span> out.txt 
+</code></pre></div><p>打開 out.txt，看到 &ldquo;helper/icon&rdquo; &ldquo;date&rdquo; 這些關鍵字。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">268
+</span><span class="lnt">269
+</span><span class="lnt">270
+</span><span class="lnt">271
+</span><span class="hl"><span class="lnt">272
+</span></span><span class="lnt">273
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">themes\hugo-theme-stack\i18n\zh-CN.yaml:    lastUpdatedOn:
+themes\hugo-theme-stack\layouts\page\search.json:    {{- $data := dict &#34;title&#34; .Title &#34;date&#34; .Date &#34;permalink&#34; .Permalink &#34;content&#34; (.Plain) -}}
+themes\hugo-theme-stack\layouts\partials\article\components\details.html:    {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+themes\hugo-theme-stack\layouts\partials\article\components\details.html:        {{ if not .Date.IsZero }}
+<span class="hl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:                {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
+</span>themes\hugo-theme-stack\layouts\partials\article\components\details.html:                    {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
+</code></pre></td></tr></table>
+</div>
+</div><p>接著把 <code>themes\hugo-theme-stack\layouts\partials\article\components\details.html</code> 翻出來看看，哇! bingo! 就是這個檔案指定了日期時間的小圖示。看來他是寫死在這個 component 裡面所以就只能修改這個 html 了。</p>
+<p>注意! 因為是修改 theme 的預設樣式，所以我們的 svg 圖檔資源要放在 <code>themes\hugo-theme-stack\assets\icon</code> 裡，理當不能放在自己的 hugo 專案裡，如果你自己放了一包圖檔在資料夾中，圖檔名稱是可以包含路徑 e.g. <code>blog-linear/hourglass.svg</code>。</p>
+<p>( Windows 的 dir 是 <code>\</code> 反斜線，故意跟其他作業系統/程式語言不一樣。這裡 html 中的路徑須為 <code>/</code> 斜線 )</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="hl"><span class="lnt">28
+</span></span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="hl"><span class="lnt">37
+</span></span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+<span class="p">&lt;</span><span class="nt">footer</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time&#34;</span><span class="p">&gt;</span>
+    {{ if not .Date.IsZero }}
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="hl">            {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
+</span>            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--published&#34;</span><span class="p">&gt;</span>
+                {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
+            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    {{ end }}
+
+    {{ if .Site.Params.article.readingTime }}
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="hl">            {{ partial &#34;helper/icon&#34; &#34;clock&#34; }}
+</span>            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--reading&#34;</span><span class="p">&gt;</span>
+                {{ T &#34;article.readingTime&#34; .ReadingTime }}
+            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    {{ end }}
+<span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+{{ end }}
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="小結">小結</h2>
+<p>一路 trace code 改下來真的很花時間，如果是修改一般的網頁模板的圖示應該會比較輕鬆(不論是純JS或是三大框架)，只要對專案 CTRL+F 就可以找到哪裡引用了圖示資源再改掉他就好，哪像 hugo 這麼抽象化。</p>
+<p>這個案例凸顯 Hugo 為了增加可擴充性，必須犧牲掉部分的可讀性，尤其是針對無法擴充的部分，所以在開發時設想哪些功能未來會被擴充很重要阿，後期增加的 features 要顧慮到這點也就更難了。正是 OOP open–closed principle 的寫照:</p>
+<p><em>&ldquo;Software entities should be open for extension, but closed for modification.&rdquo; - Robert C. Martin&rsquo;s 1996</em></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="">
+    <a href="/p/virtualbox-clipboard/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">VirtualBox 無法共用剪貼簿的萬年老 Bug</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/hugo-tutorial/">
+        
+        
+            <div class="article-image">
+                <img src="/p/hugo-tutorial/img-hugo-logo.69b98ea658e75b0bbfd778265cf8554b_hucd358bea0277494dc1176617efda6bee_12848_250x150_fill_box_smart1_3.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="hugo-tutorial" 
+                        data-hash="md5-abmOpljnWwu/13gmXPhVSw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Hugo tutorial</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 呂晟維 - luweber88.github.io
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#修改前後比對">修改前後比對</a></li>
+    <li><a href="#icon-的存放目錄">Icon 的存放目錄</a></li>
+    <li><a href="#修改左側-sidebar-上的圖示">修改左側 Sidebar 上的圖示</a>
+      <ol>
+        <li><a href="#首頁圖示">首頁圖示</a></li>
+        <li><a href="#其他-page-的圖示">其他 Page 的圖示</a></li>
+        <li><a href="#修改頭像">修改頭像</a></li>
+      </ol>
+    </li>
+    <li><a href="#修改文章發表日期閱讀時間的圖示">修改文章發表日期、閱讀時間的圖示</a></li>
+    <li><a href="#小結">小結</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
