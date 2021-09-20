@@ -14,7 +14,5 @@ categories:
 
 從小到大的求學階段，我看過天賦異稟卻沒那麼努力的人；或者是努力付出了許多，卻不一定得到那麼多的人。不過呢，**你在中央資管的大家庭，你就不是一個人單打獨鬥**，學長姐、同儕間願意分享經歷、分享資源，是我最感謝、最珍惜的事情。祝福中央資管的各位未來順利、幸福、愉快。
 
-前言，正篇：
-
-- [資工所 vs 資管所 怎麼選??](https://www.notion.so/vs-caefba2c37174c338ed6cff4788eb1de)
-- [推甄經驗分享](https://www.notion.so/d482bef280ae4e3b8b4d534cbe9162bb)
+- 前言 《[資工所 vs 資管所 怎麼選??](https://www.notion.so/vs-caefba2c37174c338ed6cff4788eb1de)》
+- 正篇 《[推甄經驗分享](https://www.notion.so/d482bef280ae4e3b8b4d534cbe9162bb)》
