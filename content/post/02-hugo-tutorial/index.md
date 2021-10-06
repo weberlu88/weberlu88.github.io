@@ -39,7 +39,7 @@ Hugo 使用 CLI(command line interface) 進行網站的本地部屬和打包等�
 
 每個指令都可以帶相關參數，有關更多指令和參數可參考官網<span class="emojify">:point_right:</p> https://gohugo.io/commands/。
 
-建議使用 VScode、Autm、Sublime 等程式編輯器來開啟專案，這類 ide 都有內建終端機好讓你下 CLI 指令。
+建議使用 VScode、Atom、Sublime 等程式編輯器來開啟專案，這類 ide 都有內建終端機好讓你下 CLI 指令。
 
 ### 套用模板
 
@@ -50,7 +50,7 @@ Hugo 模板允許大量的客製化，網站的樣式、架構、config 配置�
 
 ### 編輯
 
-在 hugo 專案上編輯網頁內容時再簡單不過了，hugo 使用 markdown 文件來記錄網站內容，文章內容放在 `/content` 目錄中，假如說我今天要建立一個新的頁面，則可在 `/content/post` 中新增一個資料夾，檔案格式為:
+在 hugo 專案上撰寫網頁內容時再簡單不過了，hugo 使用 markdown 文件來記錄網站內容，文章內容放在 `/content` 目錄中，假如說我今天要建立一個新的頁面，則可在 `/content/post` 中新增一個資料夾，檔案格式為:
 {{< highlight text >}}
 /02-hugo-tutorial  (頁面資料夾)
   |-- index.md     (文章內容)
