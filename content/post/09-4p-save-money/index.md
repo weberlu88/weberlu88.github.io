@@ -47,7 +47,7 @@ categories:
 
 根據證交所公布截至今（2021）年7月的證券開戶統計資料，已累積超過1,175萬人開戶，其中年齡20～30歲的開戶數較前月增加約4.09萬人，顯示有更多年輕族群進入股市，想透過較高的投資效益滾大儲蓄帳戶。
 
-> :question: *Q: 老話一句，不要買個股，但總要學看股市。 ps: 0056 今年沒有除息喔@@*
+> :question: *Q: 老話一句，不要買個股，但總要學看股市。*
 >    - [ETF_news_link](https://finance.ettoday.net/news/2093682) 
 >    - [another_link](https://www.mirrormedia.mg/story/20210902money002/)
 
