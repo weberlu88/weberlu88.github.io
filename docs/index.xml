@@ -13,8 +13,10 @@
         
         <guid>https://weberlu88.github.io/p/updating-4-retire-rule/</guid>
         <description>&lt;blockquote&gt;
-&lt;p&gt;原文👉 &lt;a class=&#34;link&#34; href=&#34;https://www.gvm.com.tw/article/83033&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;退休金「黃金4%法則」慘被打臉？高通膨年代得改用「這策略」！ | 2021-10-06&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;引用原文👉 &lt;a class=&#34;link&#34; href=&#34;https://www.gvm.com.tw/article/83033&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;退休金「黃金4%法則」慘被打臉？高通膨年代得改用「這策略」！ | 2021-10-06&lt;/a&gt;&lt;br&gt;
+分析報告👉 &lt;a class=&#34;link&#34; href=&#34;https://personal.vanguard.com/pdf/ISGFIRE.pdf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://personal.vanguard.com/pdf/ISGFIRE.pdf&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
 &lt;p&gt;讀者觀點，我們能從這篇文章學到甚麼?&lt;/p&gt;
@@ -29,6 +31,30 @@
 &lt;p&gt;由於班根追蹤近30年美國股市大盤報酬，發現每年平均回報約為7至8%，若扣掉2～3%通膨後的年報酬率，則約為5%。所以，如果有人一年只提領老本中僅4%的金額，同時妥善做股債各半的投資配置，由於提領支出不會超過每年平均5%的報酬，這個人就可以年年提領不必擔心花光，達到退休要求。&lt;/p&gt;
 &lt;p&gt;換句話說，若有人一年花費約100萬，依照4%法則，這個人只要存到2500萬就夠，因為2500萬的4%就是100萬，或可以直接把年花費乘以25倍更好計算。這個退休金的標準不高，因此深獲許多想提早退休的年輕人歡迎，包括前外資分析師楊應超，都善用此法則做理財規劃，在48歲成功退休。&lt;/p&gt;
 &lt;p&gt;然而，去年底全球股市進入高檔、通膨也蠢蠢欲動，《富比世》便分析指出，「4%法則」在此狀況下，勢必讓退休族未來難有便宜股票可撿、同時卻面臨物價上升，被迫支出更多；而連原先用來保護報酬的公債，也因政府濫發熱錢、殖利率接近零，有可能讓老本提早花光。該怎麼辦？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;讀者QA&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;❓ 4%法則是指退休後的現金來源為 &lt;strong&gt;(1)以2500萬投資的報酬(本金的4%)當作生活費，而不花費本金&lt;/strong&gt;，還是 &lt;strong&gt;(2)每年提領2500萬的4%本金當作生活費&lt;/strong&gt;?&lt;br&gt;
+💬 4% of initial $1 million，所以是(2)提領本金的4%(or動態調整為4%+-offset)，而(1)投資報酬又可補足本金。如圖。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 266; 
+			flex-basis: 639px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-returns.png&#34; data-size=&#34;1133x425&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-returns.png&#34;
+			width=&#34;1133&#34;
+			height=&#34;425&#34;
+			srcset=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-returns_hu0bd66e7423dc4c877f9f87134794c982_58359_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/updating-4-retire-rule/img-returns_hu0bd66e7423dc4c877f9f87134794c982_58359_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;❓ 股債各半是只2500的退休金全數投入股票和債券? 需花費時再兌現? 這樣很不實際吧?&lt;br&gt;
+💬 全數投入。Bengen (1994) calculated the maximum percentage  that retirees could withdraw annually from their portfolio without running out of money over 30 years. Advisors refer to this percentage as the safe withdrawal rate.&lt;/p&gt;
+&lt;p&gt;❓ 此份報告是針對美國民眾和市場的統計，龍蝦無法煎出牛排的味道，股債各半的投資模式適合台灣嗎?&lt;br&gt;
+💬 dunno。&lt;/p&gt;
 &lt;h2 id=&#34;4行不通乾脆45花更多&#34;&gt;4%行不通，乾脆4.5%花更多？&lt;/h2&gt;
 &lt;p&gt;其實，就連此法則的發明人班根，都注意到上述變數的威脅。&lt;/p&gt;
 &lt;p&gt;他近期與另一位財務顧問麥可．奇斯（Michael Kitces）重新研究，將美國1968年曾歷經停滯性通膨、股市低迷的最糟狀況納入模擬，推翻原先說法，推出全新「4.5%法則」。&lt;/p&gt;
@@ -44,6 +70,25 @@
 &lt;p&gt;事實上，根據先鋒基金團隊模擬股市上百種變化的數據顯示，4%法則若維持在30年內，成功實踐退休夢的機率尚有81.9%；若拉長到50年，就僅剩36%。屆時每三個提早退休族，就至少會有一人得在年事已高的階段，還得回頭找工作賺取收入。&lt;/p&gt;
 &lt;p&gt;而這個數據，還未考慮到政府稅率和交易手續費。誰會知道，幾十年後，政府加稅的幅度將有多大？&lt;/p&gt;
 &lt;p&gt;至於班根用歷史回測，就樂觀斷定股市報酬一定能抵過通膨與每年固定花費，在先鋒團隊看來也覺得太天真。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 128; 
+			flex-basis: 307px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-success-rate.png&#34; data-size=&#34;570x445&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-success-rate.png&#34;
+			width=&#34;570&#34;
+			height=&#34;445&#34;
+			srcset=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-success-rate_hu773d4ad56256fceb5ca134a55e97a2ef_57451_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/updating-4-retire-rule/img-success-rate_hu773d4ad56256fceb5ca134a55e97a2ef_57451_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;附上遠見雜誌所引用成功機率圖&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;附上遠見雜誌所引用成功機率圖&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
 &lt;h2 id=&#34;動態提領策略較能應付不同年代危機&#34;&gt;「動態提領策略」較能應付不同年代危機&lt;/h2&gt;
 &lt;p&gt;難道人們就得打消提早退休的美夢？先鋒基金公司倒不這麼認為，根據他們的研究顯示，如果採取「動態提領」策略，比較能因應不同年代的風險。&lt;/p&gt;
 &lt;p&gt;首先，妥善計算過每年花費，同時設定一個年花費上限天花板以及下限，也許是平均年花費再往上加5%；或往下扣1.5%。接著定期於每年底，看待當年股市投資報酬的狀況作明年費用規劃。&lt;/p&gt;
@@ -51,6 +96,46 @@
 &lt;p&gt;以今年以來台股與美股大盤表現來看，目前股市報酬都還相當正面，算是好年。但若年底漲幅吐回，以動態提領策略來看，退休族就得看狀況調低明年花費。&lt;/p&gt;
 &lt;p&gt;無論你覺得4%、4.5%法則較優；還是先鋒基金建議的「動態提領」策略較符合現實，這些在在說明了，退休後的花費很難估算，光是通膨改變就能打掛原先預設，而且時間愈長、意外愈多。&lt;/p&gt;
 &lt;p&gt;想提早退休的人，規劃之前請多考慮上述變數，以免往後還得摸摸鼻子回來上班。&lt;/p&gt;
+&lt;h2 id=&#34;case-study&#34;&gt;Case Study&lt;/h2&gt;
+&lt;p&gt;幫遠見雜誌補充個案例，我只貼 case 2 即第一年投資報酬率 0%，第一年投資報酬率 -10% 的情況下，該怎麼提領的試算。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 444; 
+			flex-basis: 1066px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-assump.png&#34; data-size=&#34;1142x257&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-assump.png&#34;
+			width=&#34;1142&#34;
+			height=&#34;257&#34;
+			srcset=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-assump_hucf70d47066bb4de80d5f616ecac9fa50_46625_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/updating-4-retire-rule/img-assump_hucf70d47066bb4de80d5f616ecac9fa50_46625_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;assumption&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;assumption&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 148; 
+			flex-basis: 357px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-case2.png&#34; data-size=&#34;1162x781&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-case2.png&#34;
+			width=&#34;1162&#34;
+			height=&#34;781&#34;
+			srcset=&#34;https://weberlu88.github.io/p/updating-4-retire-rule/img-case2_huf3ba1938106bd880280ea57a4a82142b_232558_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/updating-4-retire-rule/img-case2_huf3ba1938106bd880280ea57a4a82142b_232558_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;case 2&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;case 2&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
 </description>
         </item>
         <item>
