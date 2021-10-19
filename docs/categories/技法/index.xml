@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技法 on 呂晟維 - luweber88.github.io</title>
+    <link>https://weberlu88.github.io/categories/%E6%8A%80%E6%B3%95/</link>
+    <description>Recent content in 技法 on 呂晟維 - luweber88.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 14 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://weberlu88.github.io/categories/%E6%8A%80%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>資安攻擊技法 - Process Hollowing</title>
+      <link>https://weberlu88.github.io/p/process-hollowing/</link>
+      <pubDate>Thu, 14 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://weberlu88.github.io/p/process-hollowing/</guid>
+      <description>這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。
+Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什麼是 Process Hollowing Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。
+接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。
+要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。
+技高一籌的攻擊行為是 Hijacking，攻擊者必須找到由 system admin 執行的 process 並且嘗試植入惡意程式，藉此獲得 admin 權限；找到 admin 權限的執行緒很容易，Hijacking 的精隨在於如何讓執行中的 process 進入 suspend mode 並知道它的 Image section 以 inject。</description>
+    </item>
+    
+  </channel>
+</rss>
