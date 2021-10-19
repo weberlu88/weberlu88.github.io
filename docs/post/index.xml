@@ -43,22 +43,6 @@ Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什
     </item>
     
     <item>
-      <title>HW0 write-up</title>
-      <link>https://weberlu88.github.io/p/hw0/</link>
-      <pubDate>Fri, 08 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://weberlu88.github.io/p/hw0/</guid>
-      <description>Me: R10725012 呂晟維
-CTF Account: ConstAaEqual7
-Co-operator: R10725052
- Crypto - Image xor   題目附了一個加密的程式，可以發現他是用 arr[i][j] ^= random.randint(0,255) xor 來加密。
- flag.png ^ randint = enc_flag.png golem.png ^ randint = enc_golem.png    配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:
- (flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png    Decrypt script
-每種邏輯運算都做做看。
-  import cv2 from google.colab.patches import cv2_imshow img_a = cv2.imread(&amp;#39;flag_enc.png&amp;#39;, cv2.</description>
-    </item>
-    
-    <item>
       <title>個人理財的４個觀念</title>
       <link>https://weberlu88.github.io/p/4-principle-toward-savings/</link>
       <pubDate>Wed, 06 Oct 2021 00:00:00 +0000</pubDate>
@@ -86,18 +70,6 @@ Co-operator: R10725052
 今年22歲的小源每月收入3萬元，假如每月只有雇主提撥的6%，每年薪資成長率1%，勞退帳戶投資報酬率3%，預估工作43年後可以領取勞退金，經勞工個人勞退新制退休金試算，累積退休金及收益達227萬元，退休後每月可領1.2萬元。
 除了雇主提繳的6%，若是小源每月再自提6%，在相同的條件之下，累積退休金及收益則能達454萬元，退休後每月可領2.5萬元，相較於只有提繳6%多了2倍以上。隨著日後職務專業度、年資漸增，每月收入也會再增加，若能持續自提6%，累積的勞退金效益將更大。
  ❓ (1)論勞保對8年級生的付出與回饋 (2)勞退怎麼算</description>
-    </item>
-    
-    <item>
-      <title>NTU Mail 綁定轉發/寄信功能到 Gmail 上</title>
-      <link>https://weberlu88.github.io/p/ntu-mail-bind-google/</link>
-      <pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://weberlu88.github.io/p/ntu-mail-bind-google/</guid>
-      <description>背景知識  https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie/SameSite https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie https://www.youtube.com/watch?v=GPz7onXjP_4  
-實測結論 不行! 後端無法透過 request 取得 iframe 內嵌銀行網頁的 cookie。
-下圖中可以看到兩個不同網域的 cookie，我們建在本機的釣魚網站是 https://127.0.0.1:5000，網路銀行的網站則是 https://www.digistarbank.com.tw (iframe)，因為還未登入所以只有兩個 cookie (language、sessionId)，他們在 firefox 瀏覽器的屬性為:
- samesite = None (在 chrome 中則是空白，因為銀行網站沒有主動設定所以連 none 都沒有) secure = false (同上) httpOnly = true (在 chrome 中同為 true)  發現和釋疑  我以為 cookie 中的 secure 屬性只要該網站是 https 就會被添加上去，事實上不是，需要特別由 set-cookie 設置。可參考背景知識中 set-cookie 的連結。  疑點: 若第三方網頁允許第三方 cookie，Secure attribute 是要設置在第三方網頁上嗎? 疑點: 若第三方網頁允許第三方 cookie，Samesite attribute 是要設置在第三方網頁上嗎?   httpOnly 會禁止 JS 傳送和存取 cookie?</description>
     </item>
     
     <item>
