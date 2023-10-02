@@ -16,12 +16,11 @@
       <description>👦: 才接觸 hugo 三天就來東改西改484搞錯了什麼。
 👧: 要不要先去看個 YouTube 教學搞懂一下檔案結構和編譯方式呀?
 👦: 有道理&amp;hellip; 但是我拒絕.jpg !
- 修改前後比對 預設的圖標是單色的 修改後變得繽紛許多
-Icon 的存放目錄 依照此模板官網的說法，預設的 SVG icon 放在 theme 目錄底下，即為 themes/hugo-theme-stack/assets/icons 目錄，為了方便起見我將我自己下載的 icon 資料夾放在同一個目錄中。其實你也可以放在 hugo 專案的 /assets/icons 底下。
+修改前後比對 預設的圖標是單色的修改後變得繽紛許多Icon 的存放目錄 依照此模板官網的說法，預設的 SVG icon 放在 theme 目錄底下，即為 themes/hugo-theme-stack/assets/icons 目錄，為了方便起見我將我自己下載的 icon 資料夾放在同一個目錄中。其實你也可以放在 hugo 專案的 /assets/icons 底下。
 在設定檔中，圖檔名稱是可以包含路徑的，而網站在編譯時會自行加上副檔名:
- 預設: iconname 自定義: subfolder/iconname  修改左側 Sidebar 上的圖示 首頁圖示 參照作者的文件: https://docs.stack.jimmycai.com/configuration/custom-menu.html。
+預設: iconname 自定義: subfolder/iconname 修改左側 Sidebar 上的圖示 首頁圖示 參照作者的文件: https://docs.stack.jimmycai.com/configuration/custom-menu.html。
 左側的 Sidebar 又稱菜單或 Menu，可以從(1) config.yaml 檔中設定，或是從(2) /content/page 底下 md 檔的標頭(Markdown Front Matter)設定。首頁圖示以及其他項目只能從 config 檔中設定，格式為:
-menu:main:- identifier:homename:首頁url:/weight:-100pre:blog-lineal/homeparams:### For demonstration purpose, the home link will be open in a new tabnewTab:false identifier: Item ID (指該 menu item 對應到哪個檔案?</description>
+menu: main: - identifier: home name: 首頁 url: / weight: -100 pre: blog-lineal/home params: ### For demonstration purpose, the home link will be open in a new tab newTab: false identifier: Item ID (指該 menu item 對應到哪個檔案?</description>
     </item>
     
     <item>
@@ -31,12 +30,11 @@ menu:main:- identifier:homename:首頁url:/weight:-100pre:blog-lineal/homeparams
       
       <guid>https://weberlu88.github.io/p/virtualbox-clipboard/</guid>
       <description>Kail linux 官網提供了很詳細的安裝教學文件，我們可以從virtualbox 的設定中看到我們開啟了 Shared Clipboard 功能。倘若你實際上卻無法與 host 主機共用剪貼簿，那就恭喜跟我一樣碰到 virtualbox 的老問題了。
- 也有可能是 Kail linux ISO 的問題，因為我同台 host 也裝了 ubuntu、centOS 的 vm 卻沒有此狀況。
- 開啟雙通道 有裝GuestAddition
-正文開始  可參考英文論壇的解法 https://askubuntu.com/questions/22743/how-do-i-install-guest-additions-in-a-virtualbox-vm 或是中文翻譯版 https://ubuntuqa.com/zh-tw/article/66.html 或 https://www.jinnsblog.com/2021/05/virtualbox-guest-additions-install-guide.html。
- 因為我們已經在 virtualbox 的設定中加入了 GuestAddition.iso，因此可以在 vm 的桌面看到一個光碟機。點開來看裡面有 auturun 的執行檔，但是看起來就是沒有 work，需要手動安裝。如果你沒有在 virtualbox 設定中加入 GuestAddition.iso，須執行這項:
-sudo apt-get updatesudo apt-get install virtualbox-guest-additions-iso 我們的目標是掛載光碟並執行 VBoxLinuxAdditions.run
-其他版本的 Linux 也許可以從檔案管理員執行 VBoxLinuxAdditions.run 這個 shellscript。但 kali 不行，首先我們要掛載這個映像檔然後執行它:</description>
+也有可能是 Kail linux ISO 的問題，因為我同台 host 也裝了 ubuntu、centOS 的 vm 卻沒有此狀況。
+開啟雙通道有裝GuestAddition正文開始 可參考英文論壇的解法 https://askubuntu.com/questions/22743/how-do-i-install-guest-additions-in-a-virtualbox-vm 或是中文翻譯版 https://ubuntuqa.com/zh-tw/article/66.html 或 https://www.jinnsblog.com/2021/05/virtualbox-guest-additions-install-guide.html。
+因為我們已經在 virtualbox 的設定中加入了 GuestAddition.iso，因此可以在 vm 的桌面看到一個光碟機。點開來看裡面有 auturun 的執行檔，但是看起來就是沒有 work，需要手動安裝。如果你沒有在 virtualbox 設定中加入 GuestAddition.iso，須執行這項:
+sudo apt-get updatesudo apt-get install virtualbox-guest-additions-iso 我們的目標是掛載光碟並執行 VBoxLinuxAdditions.run其他版本的 Linux 也許可以從檔案管理員執行 VBoxLinuxAdditions.run 這個 shellscript。但 kali 不行，首先我們要掛載這個映像檔然後執行它:
+sudo mount /dev/cdrom /mnt # or any other mountpointcd /mntsudo sh .</description>
     </item>
     
     <item>
@@ -46,10 +44,10 @@ sudo apt-get updatesudo apt-get install virtualbox-guest-additions-iso 我們�
       
       <guid>https://weberlu88.github.io/p/hugo-tutorial/</guid>
       <description>這篇文章將會教你如何用 hugo 的模板建立靜態網站，並且部屬到 github page 上作為你的個人網站。
- Hugo 是什麼 &amp;ldquo;Hugo is a fast and modern static site generator written in Go, and designed to make website creation fun again.&amp;quot; by 官網
+Hugo 是什麼 &amp;ldquo;Hugo is a fast and modern static site generator written in Go, and designed to make website creation fun again.&amp;rdquo; by 官網
 優點:
- 懶人 - Hugo 是一個靜態網頁生成器，使用者不需要對 html、css、js 進行任何操作，不怕套了精美的模板卻改不動。 簡潔 - 使用markdown格式撰寫文章，資源讀取簡單，而且開發時可以 life-reload 頁面。 漂亮 - 有各式各樣的模板供你選擇。  實用連結:
- Hugo - Static Site Generator | Tutorial Hugo手把手安裝教學 Hugo 主题 Stack  Hugo 開發環境安裝 官網教學👉 https://gohugo.io/getting-started/installing/。
+懶人 - Hugo 是一個靜態網頁生成器，使用者不需要對 html、css、js 進行任何操作，不怕套了精美的模板卻改不動。 簡潔 - 使用markdown格式撰寫文章，資源讀取簡單，而且開發時可以 life-reload 頁面。 漂亮 - 有各式各樣的模板供你選擇。 實用連結:
+Hugo - Static Site Generator | Tutorial Hugo手把手安裝教學 Hugo 主题 Stack Hugo 開發環境安裝 官網教學👉 https://gohugo.io/getting-started/installing/。
 要使用 hugo 來開發不需要安裝 go 只需要安裝 hugo 即可，在 windows 環境下需要用 scoop、choco 在 cmd 中安裝；如果沒有這兩個套件管理工具或不想打指令，也可以從官方 github release 下載 zip 檔，有些模板會用到 extended 版，最後記得將 hugo.</description>
     </item>
     

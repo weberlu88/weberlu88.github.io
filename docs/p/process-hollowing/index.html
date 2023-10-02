@@ -274,9 +274,9 @@ Tactics: Privilege Escalation, Defense Evasion Techniques: Process Injection 什
 
     <section class="article-content">
     <p>這篇文章將會介紹 Process Hollowing 的原理並輔以程式碼片段加以解說。 根據 Mitre att&amp;ck 的分類，Process Hollowing 是 Process Injection 的一門子類別，又可稱為 cross-process injection。這次的程式展示將以 Windows 作業系統為目標，Windows 的執行檔統稱 portable executables (PE)，因此此項技法又名為 Portable Executable Injection。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Tactics: Privilege Escalation, Defense Evasion
-Techniques: Process Injection
-</code></pre></div><h2 id="什麼是-process-hollowing">什麼是 Process Hollowing</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Tactics: Privilege Escalation, Defense Evasion
+</span></span><span class="line"><span class="cl">Techniques: Process Injection
+</span></span></code></pre></div><h2 id="什麼是-process-hollowing">什麼是 Process Hollowing</h2>
 <p>Process Hollowing 是將惡意程式碼植入至 suspended 的 Process (執行緒)，達到可執行任意程式碼(arbitrary code execution)的目的，藉此偽裝被劫持的執行緒，繞過防毒軟體、應用程式偵測等防禦機制。最常見的範例是攻擊者自行 spawn 一個正常的 process，如 cmd.exe、svchost.exe，並且直接將其設為 suspend mode。</p>
 <p>接下來有兩種做法，一是將惡意程式寫入原本 process 的 Image 中，二是另外分配一段記憶體給惡意程式再將原本 process 的 ImageBase 和 EntryPoint 指向新分配到的記憶體。最後攻擊者將 process 恢復執行即可掛羊頭賣狗肉的執行惡意程式了。</p>
 <p>要注意的是，Process Hollowing 的權限是依據當前使用者的權限，或繼承父執行緒權限。若我們只 compromise 到一般使用者的帳號或執行階段(Session)，則只能獲得該使用者的權限。</p>
@@ -377,7 +377,8 @@ Techniques: Process Injection
 			alt="States of a Process in Operating Systems (from www.geeksforgeeks.org)">
 	</a>
 	
-	<figcaption>States of a Process in Operating Systems (from <a href="http://www.geeksforgeeks.org">www.geeksforgeeks.org</a>)</figcaption>
+	<figcaption>States of a Process in Operating Systems (from <a class="link" href="https://www.geeksforgeeks.org"  target="_blank" rel="noopener"
+    >www.geeksforgeeks.org</a>)</figcaption>
 	
 </figure></p>
 </li>
@@ -485,7 +486,7 @@ Techniques: Process Injection
 <p>技術文章與實作 (超推必看)</p>
 <ul>
 <li><a class="link" href="https://www.microsoft.com/security/blog/2017/07/12/detecting-stealthier-cross-process-injection-techniques-with-windows-defender-atp-process-hollowing-and-atom-bombing/"  target="_blank" rel="noopener"
-    >Detecting stealthier cross-process injection techniques with Windows Defender ATP: Process hollowing and atom bombing</a>, <a class="link" href="http://www.microsoft.com"  target="_blank" rel="noopener"
+    >Detecting stealthier cross-process injection techniques with Windows Defender ATP: Process hollowing and atom bombing</a>, <a class="link" href="https://www.microsoft.com"  target="_blank" rel="noopener"
     >www.microsoft.com</a></li>
 <li>autosectools.com&rsquo;s PDF: <a class="link" href="https://www.autosectools.com/process-hollowing.pdf"  target="_blank" rel="noopener"
     >https://www.autosectools.com/process-hollowing.pdf</a></li>
@@ -565,7 +566,7 @@ Techniques: Process Injection
         
             2020 - 
         
-        2021 呂晟維 - luweber88.github.io
+        2023 呂晟維 - luweber88.github.io
     </section>
     
     <section class="powerby">

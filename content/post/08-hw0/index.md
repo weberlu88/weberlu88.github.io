@@ -1,10 +1,10 @@
 ---
-title: HW0 write-up  
+title: 計算機安全 HW0 CTF write-up  
 description: # 前測，今年似乎只發加簽碼給 4 題都解出來的同學 
 date: 2021-10-08
 slug: hw0
 image: 
-draft: true
+draft: false
 categories:
 ---
 > Me: R10725012 呂晟維  

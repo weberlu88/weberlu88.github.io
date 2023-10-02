@@ -331,17 +331,17 @@
 <p>參照作者的文件: <a class="link" href="https://docs.stack.jimmycai.com/configuration/custom-menu.html"  target="_blank" rel="noopener"
     >https://docs.stack.jimmycai.com/configuration/custom-menu.html</a>。</p>
 <p>左側的 Sidebar 又稱菜單或 Menu，可以從(1) <code>config.yaml</code> 檔中設定，或是從(2) <em>/content/page</em> 底下 md 檔的標頭(Markdown Front Matter)設定。首頁圖示以及其他項目只能從 config 檔中設定，格式為:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">menu</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l">home</span><span class="w">
-</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">首頁</span><span class="w">
-</span><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">/</span><span class="w">
-</span><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">100</span><span class="w">
-</span><span class="w">          </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/home</span><span class="w">
-</span><span class="w">          </span><span class="nt">params</span><span class="p">:</span><span class="w">
-</span><span class="w">              </span><span class="c">### For demonstration purpose, the home link will be open in a new tab</span><span class="w">
-</span><span class="w">              </span><span class="nt">newTab</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span></code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">menu</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l">home</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">首頁</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">/</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">100</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/home</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">params</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="c">### For demonstration purpose, the home link will be open in a new tab</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">newTab</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span></code></pre></div><ul>
 <li><code>identifier</code>: Item ID (指該 menu item 對應到哪個檔案??)</li>
 <li><code>name</code>: Display text (左側選單上 menu item 的文字)</li>
 <li><code>url</code>: Link (該頁面的路由)</li>
@@ -351,26 +351,26 @@
 <p>像是我將 <code>pre</code> 改設為 <code>blog-lineal/home</code>, theme 就會自動抓取 <em>assets/icons</em> 目錄底下的 <code>blog-lineal/home.svg</code>。</p>
 <h3 id="其他-page-的圖示">其他 Page 的圖示</h3>
 <p>其他 menu item 裡的頁面，模板預設寫在 <em>/content/page</em> 的 md 檔中，以我的&quot;文章庫&quot;為例，一樣將 <code>pre</code> field 改成我的 svg 圖片檔名。當然你想要把 <code>menu:</code> 這部分挪到 config 檔裡統一設定也 OK。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
-</span><span class="w"></span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;文章庫&#34;</span><span class="w">
-</span><span class="w"></span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="ld">2019-05-28</span><span class="w">
-</span><span class="w"></span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">              </span><span class="c"># 哪種頁面樣板</span><span class="w">
-</span><span class="w"></span><span class="nt">slug</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">                </span><span class="c"># 路由</span><span class="w">
-</span><span class="w"></span><span class="nt">menu</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">70</span><span class="w">
-</span><span class="w">        </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/folder</span><span class="w"> </span><span class="c"># icon</span><span class="w">
-</span><span class="w"></span><span class="nn">---</span><span class="w">
-</span></code></pre></div><h3 id="修改頭像">修改頭像</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;文章庫&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="ld">2019-05-28</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">              </span><span class="c"># 哪種頁面樣板</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">slug</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;archives&#34;</span><span class="w">                </span><span class="c"># 路由</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">menu</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">main</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span>-<span class="m">70</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">pre</span><span class="p">:</span><span class="w"> </span><span class="l">blog-lineal/folder</span><span class="w"> </span><span class="c"># icon</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span><span class="w">
+</span></span></span></code></pre></div><h3 id="修改頭像">修改頭像</h3>
 <p>順帶一提，大頭貼、副標題和網站名稱都可以在 config 中編輯。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">sidebar</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">emoji</span><span class="p">:</span><span class="w"> </span><span class="l">🇹🇼</span><span class="w">
-</span><span class="w">    </span><span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="kc">No</span><span class="w"> </span><span class="l">slave to the ordinary. Your legacy is yours to make.</span><span class="w">
-</span><span class="w">    </span><span class="nt">avatar</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">        </span><span class="nt">local</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">        </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="l">img/avatar_cap_and_gown.jpg</span><span class="w">
-</span></code></pre></div><h2 id="修改文章發表日期閱讀時間的圖示">修改文章發表日期、閱讀時間的圖示</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">sidebar</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">emoji</span><span class="p">:</span><span class="w"> </span><span class="l">🇹🇼</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="kc">No</span><span class="w"> </span><span class="l">slave to the ordinary. Your legacy is yours to make.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">avatar</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">local</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="l">img/avatar_cap_and_gown.jpg</span><span class="w">
+</span></span></span></code></pre></div><h2 id="修改文章發表日期閱讀時間的圖示">修改文章發表日期、閱讀時間的圖示</h2>
 <blockquote>
 <p>做下去才發現這個超難搞 &gt;&lt;<br>
 個人化修改可以參考: <a class="link" href="https://docs.stack.jimmycai.com/modify-theme/"  target="_blank" rel="noopener"
@@ -381,13 +381,13 @@
     >Date format</a> 沒有多做描述，我們在 theme-stack 專案的 <a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack/pull/204"  target="_blank" rel="noopener"
     >feat(article): reading time #204</a> 這個 pull request 中看到文章發表日期的圖示是 date.svg，以及閱讀書間的圖示是 time.svg (由下文推敲出次圖示於後來的版本被改成 clock.svg)。</p>
 <p>但還有一件事我們可以確定，就是這兩個 icon 的賦值一定存在專案的某個檔案片段，可能寫死在 theme 的 md 或是 html 裡面不讓使用者自訂義。所以還可以遍歷專案尋找哪裡有 date 或 time 字串。於是我打開 cmd 切到專案目錄下並輸入:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">$ grep -r <span class="s2">&#34;date&#34;</span> .
-<span class="s1">&#39;grep&#39;</span> 不是內部或外部命令、可執行的程式或批次檔。
-</code></pre></div><p>蝦? 原來 windows 作業系統沒有 <a class="link" href="https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively"  target="_blank" rel="noopener"
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">$ grep -r <span class="s2">&#34;date&#34;</span> .
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;grep&#39;</span> 不是內部或外部命令、可執行的程式或批次檔。
+</span></span></code></pre></div><p>蝦? 原來 windows 作業系統沒有 <a class="link" href="https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively"  target="_blank" rel="noopener"
     >grep 指令</a>，還好有雷同的 <a class="link" href="https://docs.microsoft.com/zh-tw/windows-server/administration/windows-commands/findstr"  target="_blank" rel="noopener"
     >findstr 指令</a>，記得將結果輸出到 out.txt 不然直接 print 在 cmd 上往往會因字體編碼出錯。來試試:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Batchfile" data-lang="Batchfile">$ findstr /si date *.* <span class="p">&gt;&gt;</span> out.txt 
-</code></pre></div><p>打開 out.txt，看到 &ldquo;helper/icon&rdquo; &ldquo;date&rdquo; 這些關鍵字。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Batchfile" data-lang="Batchfile"><span class="line"><span class="cl">$ findstr /si date *.* <span class="p">&gt;&gt;</span> out.txt 
+</span></span></code></pre></div><p>打開 out.txt，看到 &ldquo;helper/icon&rdquo; &ldquo;date&rdquo; 這些關鍵字。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">268
@@ -398,13 +398,13 @@
 </span></span><span class="lnt">273
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">themes\hugo-theme-stack\i18n\zh-CN.yaml:    lastUpdatedOn:
-themes\hugo-theme-stack\layouts\page\search.json:    {{- $data := dict &#34;title&#34; .Title &#34;date&#34; .Date &#34;permalink&#34; .Permalink &#34;content&#34; (.Plain) -}}
-themes\hugo-theme-stack\layouts\partials\article\components\details.html:    {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
-themes\hugo-theme-stack\layouts\partials\article\components\details.html:        {{ if not .Date.IsZero }}
-<span class="hl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:                {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
-</span>themes\hugo-theme-stack\layouts\partials\article\components\details.html:                    {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">themes\hugo-theme-stack\i18n\zh-CN.yaml:    lastUpdatedOn:
+</span></span><span class="line"><span class="cl">themes\hugo-theme-stack\layouts\page\search.json:    {{- $data := dict &#34;title&#34; .Title &#34;date&#34; .Date &#34;permalink&#34; .Permalink &#34;content&#34; (.Plain) -}}
+</span></span><span class="line"><span class="cl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:    {{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+</span></span><span class="line"><span class="cl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:        {{ if not .Date.IsZero }}
+</span></span><span class="line hl"><span class="cl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:                {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
+</span></span><span class="line"><span class="cl">themes\hugo-theme-stack\layouts\partials\article\components\details.html:                    {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>接著把 <code>themes\hugo-theme-stack\layouts\partials\article\components\details.html</code> 翻出來看看，哇! bingo! 就是這個檔案指定了日期時間的小圖示。看來他是寫死在這個 component 裡面所以就只能修改這個 html 了。</p>
 <p>注意! 因為是修改 theme 的預設樣式，所以我們的 svg 圖檔資源要放在 <code>themes\hugo-theme-stack\assets\icon</code> 裡，理當不能放在自己的 hugo 專案裡，如果你自己放了一包圖檔在資料夾中，圖檔名稱是可以包含路徑 e.g. <code>blog-linear/hourglass.svg</code>。</p>
@@ -434,28 +434,28 @@ themes\hugo-theme-stack\layouts\partials\article\components\details.html:       
 </span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
-<span class="p">&lt;</span><span class="nt">footer</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time&#34;</span><span class="p">&gt;</span>
-    {{ if not .Date.IsZero }}
-        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="hl">            {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
-</span>            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--published&#34;</span><span class="p">&gt;</span>
-                {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
-            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
-        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-    {{ end }}
-
-    {{ if .Site.Params.article.readingTime }}
-        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="hl">            {{ partial &#34;helper/icon&#34; &#34;clock&#34; }}
-</span>            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--reading&#34;</span><span class="p">&gt;</span>
-                {{ T &#34;article.readingTime&#34; .ReadingTime }}
-            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
-        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-    {{ end }}
-<span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
-{{ end }}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ if or (not .Date.IsZero) (.Site.Params.article.readingTime) }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">footer</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ if not .Date.IsZero }}
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line hl"><span class="cl">            {{ partial &#34;helper/icon&#34; &#34;date&#34; }}
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--published&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                {{- .Date.Format (or .Site.Params.dateFormat.published &#34;Jan 02, 2006&#34;) -}}
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ end }}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    {{ if .Site.Params.article.readingTime }}
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line hl"><span class="cl">            {{ partial &#34;helper/icon&#34; &#34;clock&#34; }}
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">time</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;article-time--reading&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                {{ T &#34;article.readingTime&#34; .ReadingTime }}
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">footer</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{ end }}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="小結">小結</h2>
 <p>一路 trace code 改下來真的很花時間，如果是修改一般的網頁模板的圖示應該會比較輕鬆(不論是純JS或是三大框架)，只要對專案 CTRL+F 就可以找到哪裡引用了圖示資源再改掉他就好，哪像 hugo 這麼抽象化。</p>
@@ -543,7 +543,7 @@ themes\hugo-theme-stack\layouts\partials\article\components\details.html:       
         
             2020 - 
         
-        2021 呂晟維 - luweber88.github.io
+        2023 呂晟維 - luweber88.github.io
     </section>
     
     <section class="powerby">
